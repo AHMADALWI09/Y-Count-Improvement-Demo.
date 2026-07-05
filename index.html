@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y-COUNT Enhancement Demo</title>
+<style>
+:root{--blue:#155eef;--cyan:#06aed5;--green:#12b76a;--red:#f04438;--orange:#f79009;--purple:#7a5af8;--ink:#101828;--muted:#667085;--line:#e4e7ec;--bg:#f5f7fb;--soft-blue:#eff8ff;--soft-green:#ecfdf3;--soft-red:#fff1f3;--soft-orange:#fffaeb;--soft-purple:#f4f3ff;--shadow:0 14px 42px rgba(16,24,40,.10)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Arial,sans-serif}body{background:var(--bg);color:var(--ink)}button,.click{cursor:pointer}.hidden{display:none!important}.muted{color:var(--muted)}
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:linear-gradient(135deg,#07192f,#0b4f8a 60%,#0ea5e9)}.login-left{padding:56px;color:#fff;display:flex;flex-direction:column;justify-content:center}.logo{display:flex;gap:12px;align-items:center;margin-bottom:28px}.mark{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,#12b7ff,#155eef);display:grid;place-items:center;font-size:25px;font-weight:900;color:white}.login h1{font-size:56px;line-height:1;margin-bottom:16px}.login p{line-height:1.7;color:rgba(255,255,255,.78);font-size:18px}.bullets{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:28px}.bullet{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:16px}.bullet b{display:block;margin-bottom:6px}.bullet span{font-size:13px;color:rgba(255,255,255,.75)}.login-right{display:flex;align-items:center;justify-content:center;padding:40px}.login-card{background:#fff;border-radius:30px;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:34px;width:100%;max-width:460px}.login-card h2{font-size:30px;margin-bottom:8px}.field{margin-top:14px}.field label{display:block;font-size:13px;font-weight:800;margin-bottom:7px}.field input{width:100%;border:1px solid var(--line);border-radius:16px;padding:14px}.primary{border:0;border-radius:15px;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;font-weight:900;padding:13px 16px;transition:all .3s}.primary:hover{transform:scale(1.02);box-shadow:0 8px 25px rgba(21,94,239,.35)}.light{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:15px;font-weight:900;padding:13px 16px;transition:all .3s}.light:hover{background:var(--soft-blue);border-color:var(--blue)}.login-btn{width:100%;margin-top:18px}.access{margin-top:15px;background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:13px;color:var(--muted);font-size:13px}
+.app{min-height:100vh;display:grid;grid-template-columns:270px 1fr}.side{background:linear-gradient(180deg,#061429,#0d2747);color:#fff;padding:18px 14px;height:100vh;position:sticky;top:0;overflow:auto}.side-logo{display:flex;align-items:center;gap:10px;padding:8px 8px 20px}.side-logo .mark{width:42px;height:42px;font-size:18px;border-radius:14px}.menu{display:grid;gap:6px}.menu-row{padding:12px 13px;border-radius:13px;color:rgba(255,255,255,.84);font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:all .3s}.menu-row.active,.menu-row:hover{background:linear-gradient(135deg,#155eef,#1570ef);box-shadow:0 4px 15px rgba(21,94,239,.3)}.badge{margin-left:auto;background:var(--red);color:white;border-radius:999px;padding:3px 7px;font-size:11px}.side-box{margin-top:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px}
+.content{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 24px;position:sticky;top:0;z-index:5}.tabs{display:flex;gap:8px;background:#f2f4f7;border:1px solid var(--line);padding:4px;border-radius:14px}.tab{border:0;padding:9px 13px;border-radius:10px;font-weight:800;background:transparent;color:#475467;cursor:pointer;transition:all .3s}.tab.active{background:var(--blue);color:#fff}.user{position:relative;display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;font-weight:900;color:white}.dropdown{position:absolute;right:0;top:55px;background:white;border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 55px rgba(16,24,40,.16);padding:14px;min-width:280px;z-index:30}.drop{padding:14px 16px;border-radius:14px;font-weight:800;color:#344054;cursor:pointer;transition:all .3s}.drop:hover{background:#f8fbff}.drop.logout{color:var(--red);border-top:1px solid var(--line);margin-top:8px}
+.main{padding:24px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}.head h1{font-size:31px;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.head p{color:var(--muted);margin-top:4px}.actions{display:flex;gap:10px;flex-wrap:wrap}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);transition:all .3s}.card:hover{box-shadow:0 20px 50px rgba(16,24,40,.12)}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.kpi{position:relative;min-height:130px;transition:all .3s}.kpi:hover{transform:translateY(-4px)}.kpi small{font-weight:900;color:#475467}.kpi h2{font-size:34px;margin:7px 0}.kpi p{font-size:13px;color:var(--muted)}.icon{position:absolute;right:18px;bottom:18px;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px}.blue{background:var(--soft-blue);color:var(--blue)}.green{background:var(--soft-green);color:var(--green)}.orange{background:var(--soft-orange);color:var(--orange)}.red{background:var(--soft-red);color:var(--red)}.purple{background:var(--soft-purple);color:var(--purple)}.grid3{display:grid;grid-template-columns:1fr 1fr .9fr;gap:16px;margin-bottom:16px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:16px}.modules{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}.module{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:all .3s}.module:hover{transform:translateY(-6px);box-shadow:0 14px 35px rgba(16,24,40,.12)}.module-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:10px}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.title a{font-size:12px;color:var(--blue);font-weight:900;cursor:pointer;transition:all .3s}.title a:hover{text-decoration:underline}.donut-wrap{display:flex;align-items:center;gap:26px;min-height:160px}.donut{width:128px;height:128px;border-radius:50%;background:conic-gradient(var(--green) 0 75%,var(--orange) 75% 93%,#d0d5dd 93%);display:grid;place-items:center}.red-donut{background:conic-gradient(var(--red) 0 58%,var(--orange) 58% 83%,var(--green) 83%)}.donut-in{width:82px;height:82px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}.legend{display:grid;gap:12px;flex:1}.legend-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.bar-list{display:grid;gap:12px}.bar-line{display:grid;grid-template-columns:70px 1fr 40px;gap:10px;align-items:center;font-size:13px}.bar-bg{height:9px;background:#eef2f6;border-radius:999px;overflow:hidden}.bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan))}.chart{height:230px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#f8fbff,#fff);position:relative;overflow:hidden}.chart-area{position:absolute;left:35px;right:20px;bottom:48px;height:120px;background:linear-gradient(135deg,rgba(21,94,239,.18),rgba(6,174,213,.05));clip-path:polygon(0 80%,15% 60%,30% 65%,45% 35%,60% 45%,75% 20%,100% 30%,100% 100%,0 100%)}.chart-labels{position:absolute;left:35px;right:20px;bottom:18px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:800}.feed{display:grid;gap:10px;max-height:240px;overflow:auto}.feed-item,.alert{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start;padding:10px;border-radius:14px;background:#f8fbff;border:1px solid var(--line);cursor:pointer;transition:all .3s}.feed-item:hover,.alert:hover{background:#fff;box-shadow:0 4px 15px rgba(0,0,0,.06)}.feed-icon,.alert-icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center}.feed-item b,.alert b{font-size:13px}.feed-item p,.alert p{font-size:12px;color:var(--muted);margin-top:2px}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900}.ok{background:var(--soft-green);color:#027a48}.warn{background:var(--soft-orange);color:#b54708}.bad{background:var(--soft-red);color:#b42318}.info{background:var(--soft-blue);color:#175cd3}.pill-purple{background:var(--soft-purple);color:#5925dc}.quick{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}.quick-item{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;box-shadow:var(--shadow);font-size:12px;font-weight:800;cursor:pointer;transition:all .3s}.quick-item:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.1)}.quick-item div{font-size:24px;margin-bottom:7px}.improvements{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.improve{background:linear-gradient(135deg,#102033,#173b62);color:#fff;border-radius:16px;padding:15px;display:flex;gap:12px;min-height:110px;transition:all .3s}.improve:hover{transform:scale(1.02)}.mini{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:0 0 34px}.improve h4{font-size:13px;margin-bottom:4px}.improve p{font-size:11px;color:rgba(255,255,255,.72);line-height:1.45}table{width:100%;border-collapse:collapse}th{text-align:left;font-size:11px;text-transform:uppercase;color:#667085;background:#f8fbff;padding:12px;border-bottom:1px solid var(--line)}td{padding:12px;border-bottom:1px solid var(--line);font-size:13px}.status{display:grid;gap:10px}.status-row{display:flex;justify-content:space-between;gap:12px;padding:11px;border-radius:14px;background:#f8fbff;border:1px solid var(--line);font-size:13px;transition:all .3s}.status-row:hover{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}.phone-stage{display:grid;grid-template-columns:1fr 420px;gap:24px}.phone{width:390px;background:#111827;border-radius:42px;padding:14px 14px 0;border:6px solid #1f2937;margin:auto;overflow:hidden}.screen{background:#f6f8fb;border-radius:30px;min-height:780px;display:flex;flex-direction:column;overflow:hidden;height:780px;position:relative}.phone-body{padding:14px;flex:1;overflow-y:auto;max-height:calc(780px - 120px);scroll-behavior:smooth}.phone-body::-webkit-scrollbar{width:4px}.phone-body::-webkit-scrollbar-track{background:transparent}.phone-body::-webkit-scrollbar-thumb{background:#d0d5dd;border-radius:999px}.phone-top{background:#07192f;color:white;padding:18px;display:flex;justify-content:space-between;flex-shrink:0}.phone-card{background:white;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}.phone-nav{display:grid;grid-template-columns:repeat(4,1fr);background:#07192f;color:white;padding:10px;margin-top:auto;flex-shrink:0;border-radius:0 0 30px 30px}.phone-nav div{text-align:center;font-size:11px;color:rgba(255,255,255,.75);cursor:pointer;transition:all .3s;padding:6px 0}.phone-nav div:hover{color:white}.mobile-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mobile-kpi{background:white;border:1px solid var(--line);border-radius:14px;padding:11px}.input-demo{background:#f8fbff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:8px}.input-demo small{display:block;color:var(--muted);font-weight:800;margin-bottom:4px}.submit{width:100%;border:0;background:linear-gradient(135deg,var(--blue),var(--cyan));color:white;border-radius:16px;padding:14px;font-weight:900;margin-top:12px;cursor:pointer;transition:all .3s}.submit:hover{transform:scale(1.02);box-shadow:0 8px 25px rgba(21,94,239,.3)}.scan-box{height:180px;border:1.8px dashed #9ccdf7;background:#eff8ff;border-radius:20px;display:grid;place-items:center;text-align:center;color:var(--blue);font-weight:900}.team-head{background:linear-gradient(135deg,#07192f,#0b4f8a);border-radius:28px;padding:28px;color:white;margin-bottom:18px}.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.profile{background:white;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:all .3s}.profile:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.12)}.cover{height:92px;background:linear-gradient(135deg,#dbeafe,#eff8ff)}.profile-photo{width:94px;height:94px;border-radius:22px;margin:-50px 18px 10px;border:4px solid white;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;font-size:34px;font-weight:900;color:white}.profile-body{padding:0 18px 18px}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99;align-items:center;justify-content:center;padding:20px}.modal-card{background:white;border-radius:28px;padding:24px;max-width:430px;width:100%;text-align:center;position:relative;animation:modalIn .3s ease}@keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}.close{position:absolute;right:16px;top:16px;border:0;background:#f2f4f7;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;transition:all .3s}.close:hover{background:#e4e7ec}.modal-icon{width:86px;height:86px;margin:auto;border-radius:24px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;color:white;font-size:38px;font-weight:900}.modal h2{margin-top:16px}.modal p{line-height:1.55;margin-top:8px}
+@media(max-width:1200px){.app{grid-template-columns:1fr}.side{height:auto;position:relative}.kpis{grid-template-columns:repeat(2,1fr)}.grid3,.grid2,.phone-stage{grid-template-columns:1fr}.modules,.improvements,.team-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.login{grid-template-columns:1fr}.login-left{padding:34px}.login h1{font-size:40px}.bullets,.kpis,.quick,.modules,.improvements,.team-grid{grid-template-columns:1fr}.main{padding:16px}.head,.top{height:auto;align-items:flex-start;flex-direction:column;padding:16px}.phone{width:100%;max-width:390px}.grid3,.grid2{grid-template-columns:1fr}}
+
+.toast{position:fixed;top:20px;right:20px;background:#12b76a;color:#fff;padding:14px 18px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);z-index:9999;font-weight:700;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-approve{background:var(--green);color:white;border:0;padding:6px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;transition:all .3s}.btn-approve:hover{opacity:.85;transform:scale(1.05)}.btn-reject{background:var(--red);color:white;border:0;padding:6px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;transition:all .3s}.btn-reject:hover{opacity:.85;transform:scale(1.05)}.btn-pending{background:var(--orange);color:white;border:0;padding:6px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:default}
+
+.chart-container{width:100%;padding:10px 0}.chart-bars{display:flex;align-items:flex-end;justify-content:space-around;height:140px;gap:6px}.chart-bar-group{display:flex;flex-direction:column;align-items:center;flex:1}.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .6s ease}.chart-bar-label{font-size:10px;color:var(--muted);margin-top:6px;font-weight:700}.chart-bar-value{font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:800}.trend-line{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line)}.trend-line:last-child{border-bottom:0}.trend-label{font-size:12px;font-weight:600}.trend-value{font-size:12px;font-weight:800}.trend-up{color:var(--green)}.trend-down{color:var(--red)}.trend-flat{color:var(--orange)}
+
+.glow-card{background:linear-gradient(135deg,#f8fbff,#fff);border:2px solid transparent;background-clip:padding-box;position:relative}.glow-card::before{content:'';position:absolute;inset:-2px;border-radius:24px;background:linear-gradient(135deg,var(--blue),var(--cyan),var(--purple));z-index:-1;opacity:.5}.stat-number{font-size:38px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.count-type-btn{display:block;width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;background:white;font-weight:800;font-size:14px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.count-type-btn:hover{background:var(--soft-blue);border-color:var(--blue);transform:scale(1.02)}
+.count-type-btn.selected{background:var(--blue);color:white;border-color:var(--blue)}
+
+.template-checkbox-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;text-align:left}
+.template-checkbox-group label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:6px 10px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);cursor:pointer;transition:all .2s}
+.template-checkbox-group label:hover{background:var(--soft-blue);border-color:var(--blue)}
+.template-checkbox-group label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+
+.template-header-item{padding:10px 14px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;transition:all .2s;cursor:grab;user-select:none}
+.template-header-item:hover{background:var(--soft-blue);border-color:var(--blue)}
+.template-header-item.dragging{opacity:.5;border-color:var(--blue);background:var(--soft-blue)}
+.template-header-item.drag-over{border-color:var(--blue);background:var(--soft-blue);border-style:dashed}
+.template-header-item .drag-handle{color:var(--muted);font-size:18px;cursor:grab}
+.template-header-item .header-check{display:flex;align-items:center;gap:8px}
+.template-header-item .header-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+.template-header-item .header-label{flex:1}
+.template-header-item .header-index{color:var(--muted);font-size:11px;margin-right:10px;min-width:20px}
+.header-sortable-list{display:flex;flex-direction:column;gap:4px;padding:4px 0;min-height:60px}
+
+.create-order .field label{font-size:13px;font-weight:800;color:var(--ink);display:block;margin-bottom:6px}
+.create-order .card{transition:all 0.3s ease}
+.create-order .card:hover{box-shadow:0 8px 30px rgba(16,24,40,0.08)}
+#orderPreview div{padding:8px 12px;background:white;border-radius:10px;border:1px solid var(--line)}
+#orderPreview div b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+#orderPreview div span{font-size:14px;font-weight:700}
+.form-select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:white;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:all 0.3s}
+.form-select:hover{border-color:var(--blue)}
+.form-select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,94,239,0.1)}
+.form-input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;font-weight:600;transition:all 0.3s}
+.form-input:hover{border-color:var(--blue)}
+.form-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,94,239,0.1)}
+.form-textarea{resize:vertical;min-height:60px;width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px}
+.form-textarea:hover{border-color:var(--blue)}
+.form-textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,94,239,0.1)}
+.order-list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);margin-bottom:6px;font-size:13px;transition:all .2s}
+.order-list-item:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.order-list-item .order-id{font-weight:800;color:var(--blue)}
+.order-list-item .order-info{color:var(--muted);font-size:12px}
+
+.upload-tabs{display:flex;gap:4px;background:#f2f4f7;border:1px solid var(--line);padding:4px;border-radius:14px;margin-bottom:18px}
+.upload-tab{border:0;padding:10px 18px;border-radius:10px;font-weight:800;font-size:13px;background:transparent;color:#475467;cursor:pointer;transition:all .3s}
+.upload-tab.active{background:var(--blue);color:#fff}
+.upload-tab:hover:not(.active){background:var(--soft-blue)}
+
+.header-selection-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.header-selection-grid label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:8px 12px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);cursor:pointer;transition:all .2s}
+.header-selection-grid label:hover{background:var(--soft-blue);border-color:var(--blue)}
+.header-selection-grid label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+.order-header-drag-area{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:80px;transition:all .3s}
+.order-header-drag-area.drag-over{border-color:var(--blue);background:var(--soft-blue)}
+</style>
+</head>
+<body>
+<section id="login" class="login"><div class="login-left"><div class="logo"><div class="mark">Y</div><div><h2>Y-COUNT</h2><small>Warehouse Stock Count Enhancement</small></div></div><h1>Smart Stock Count Platform</h1><p>Capstone demo application to improve stock count, offline work, validation, reporting, and product-location accuracy.</p><div class="bullets"><div class="bullet"><b>Offline Counting</b><span>Continue count without internet and sync later.</span></div><div class="bullet"><b>Realtime Dashboard</b><span>Monitor completion, discrepancy, and sync status.</span></div><div class="bullet"><b>Auto Result Validation</b><span>Compare inbound, outbound, reserved and adjustment.</span></div><div class="bullet"><b>Product & Location Monitoring</b><span>Detect location mismatch when qty and lot match.</span></div></div></div><div class="login-right"><div class="login-card"><h2>Login to Demo</h2><p class="muted">Use demo access to enter the dashboard.</p><div class="field"><label>User ID</label><input id="username" value="edurise"></div><div class="field"><label>Password</label><input id="password" type="password" value="grup3"></div><button class="primary login-btn" onclick="login()">Login to Dashboard</button><div class="access">Demo Accounts:<br>
+    <b>Manager:</b> manager01 / manager123<br>
+    <b>Supervisor:</b> supervisor01 / supervisor123<br>
+    <b>Counter:</b> counter01 / counter123</div></div></div></section>
+<section id="app" class="app hidden"><aside class="side"><div class="side-logo"><div class="mark">Y</div><div><h2>Y-COUNT</h2><small>Enhancement Demo</small></div></div><div class="menu">
+<div class="menu-row active" onclick="openModule('dashboard',this)">🏠 Dashboard</div>
+<div class="menu-row" onclick="openModule('stock',this)">📋 Stock Count</div>
+<div class="menu-row" onclick="openModule('discrepancy',this)">⚠️ Discrepancies <span class="badge">9</span></div>
+<div class="menu-row" onclick="openModule('adjustment',this)">📝 Adjustment <span id="adjBadge" class="badge">3</span></div>
+<div class="menu-row" onclick="openModule('reports',this)">📊 Reports</div>
+<div class="menu-row" onclick="openModule('master',this)">🗂️ Master Data</div>
+<div class="menu-row" onclick="openModule('upload',this)">📥 Upload & Import <span id="orderBadge" class="badge">0</span></div>
+<div class="menu-row" onclick="openModule('integration',this)">🔗 Integration</div>
+<div class="menu-row" onclick="openModule('users',this)">👥 User Management</div>
+<div class="menu-row" onclick="openModule('settings',this)">⚙️ Settings</div>
+</div><div class="side-box"><small>Warehouse</small><br><b>Y-COUNT Warehouse</b><br><small>Connection: Stable</small></div></aside><div class="content"><header class="top"><div class="tabs"><button id="desktopTab" class="tab active" onclick="showView('desktop')">▣ Desktop</button><button id="mobileTab" class="tab" onclick="showView('mobile')">▯ Mobile</button><button id="teamTab" class="tab" onclick="showView('team')">👥 Team</button></div><div class="user"><button class="light" onclick="openModal('Notifications','3 alerts: variance, blank count, offline sync.','🔔')">🔔 3</button><div class="avatar">E</div><div><b id="userNameDisplay">edurise</b><br><small id="userRoleDisplay" class="muted">Management Trainee</small></div><button class="tab" onclick="toggleUserDropdown()">⌄</button><div id="userDropdown" class="dropdown hidden"><div class="drop" onclick="openModal('Profile','Demo user profile: edurise, Group 3 Management Trainee.','👤')">👤 Profile</div><div class="drop" onclick="openModule('settings')">⚙️ Settings</div><div class="drop" onclick="showView('team')">👥 Team Details</div><div class="drop" onclick="openModal('Help & Support','Support options for access, sync, upload, UOM, blank count, and discrepancy issues.','❔')">❔ Help & Support</div><div class="drop logout" onclick="logout()">↩ Logout Demo</div></div></div></header><main id="desktop" class="main"></main><main id="mobile" class="main hidden"></main><main id="team" class="main hidden"></main></div></section>
+<input id="globalUploadInput" type="file" accept=".csv,.xls,.xlsx" style="display:none" onchange="handleUpload(event)">
+<div id="modal" class="modal" onclick="closeModal()"><div class="modal-card" onclick="event.stopPropagation()"><button class="close" onclick="closeModal()">×</button><div id="modalIcon" class="modal-icon">✓</div><h2 id="modalTitle"></h2><p id="modalText" class="muted"></p><div id="modalRows" class="status" style="margin-top:16px;text-align:left"></div><button class="submit" onclick="closeModal()">Close</button></div></div>
+<script>
+var currentSku='SKU-88120';
+var currentRole='';
+var currentUser='';
+var currentUploadTab = 'template';
+
+var templateHeaders = [
+    { key: 'product_code', label: 'Product Code', checked: true },
+    { key: 'batch_lot', label: 'Batch / Lot No', checked: true },
+    { key: 'physical_location', label: 'Physical Location', checked: true },
+    { key: 'physical_qty', label: 'Physical Actual Qty', checked: true },
+    { key: 'uom', label: 'UOM', checked: true },
+    { key: 'count_type', label: 'Count Type', checked: true },
+    { key: 'remarks', label: 'Remarks', checked: false },
+    { key: 'zone', label: 'Zone', checked: false },
+    { key: 'pid', label: 'PID / Pallet ID', checked: false },
+    { key: 'expected_qty', label: 'Expected Qty', checked: false }
+];
+
+var masterSampleData = {
+    'SKU-77120': { product_code: 'SKU-77120', batch_lot: 'LOT-2405-A', physical_location: 'B2-03-05', physical_qty: '500', uom: 'PCS', count_type: 'Blank Count', remarks: 'Location mismatch', zone: 'Zone A', pid: 'PALLET-001', expected_qty: '500' },
+    'SKU-88420': { product_code: 'SKU-88420', batch_lot: 'LOT-2404-X', physical_location: 'STAGING-02', physical_qty: '80', uom: 'CTN', count_type: 'Blank Count', remarks: 'Moved location', zone: 'Zone B', pid: 'PALLET-002', expected_qty: '80' },
+    'SKU-88120': { product_code: 'SKU-88120', batch_lot: 'BATCH-B240520', physical_location: 'A1-03-02', physical_qty: '1520', uom: 'KG', count_type: 'Variance Count', remarks: 'Physical variance', zone: 'Zone A', pid: 'PALLET-003', expected_qty: '1550' },
+    'SKU-55110': { product_code: 'SKU-55110', batch_lot: 'LOT-55110-A', physical_location: 'B2-04-01', physical_qty: '840', uom: 'CTN', count_type: 'Cycle Count', remarks: 'Transfer not confirmed', zone: 'Zone B', pid: 'PALLET-004', expected_qty: '860' },
+    'SKU-44220': { product_code: 'SKU-44220', batch_lot: 'LOT-44220-R', physical_location: 'A1-03-01', physical_qty: '2050', uom: 'PCS', count_type: 'Cycle Count', remarks: 'Reserved qty issue', zone: 'Zone A', pid: 'PALLET-005', expected_qty: '2100' }
+};
+var sampleDataKeys = ['SKU-77120', 'SKU-88420', 'SKU-88120', 'SKU-55110', 'SKU-44220'];
+var countingOrders = [];
+
+var discrepancyTrendData = {
+    weekly: [{ label: 'Mon', value: 8, color: '#f04438' }, { label: 'Tue', value: 5, color: '#f79009' }, { label: 'Wed', value: 12, color: '#f04438' }, { label: 'Thu', value: 7, color: '#f79009' }, { label: 'Fri', value: 4, color: '#12b76a' }, { label: 'Sat', value: 2, color: '#12b76a' }, { label: 'Sun', value: 1, color: '#12b76a' }],
+    monthly: [{ label: 'Jan', value: 15, color: '#f04438' }, { label: 'Feb', value: 12, color: '#f04438' }, { label: 'Mar', value: 10, color: '#f79009' }, { label: 'Apr', value: 8, color: '#f79009' }, { label: 'May', value: 5, color: '#12b76a' }, { label: 'Jun', value: 3, color: '#12b76a' }],
+    byZone: [{ label: 'Zone A', value: 5, color: '#f04438' }, { label: 'Zone B', value: 3, color: '#f79009' }, { label: 'Zone C', value: 2, color: '#12b76a' }],
+    byType: [{ label: 'Qty Variance', value: 6, color: '#f04438' }, { label: 'Location Mismatch', value: 3, color: '#f79009' }, { label: 'UOM Error', value: 2, color: '#155eef' }, { label: 'Batch/Lot Error', value: 1, color: '#12b76a' }]
+};
+
+var adjustmentRequests = [
+    { id: 'ADJ-001', sku: 'SKU-88120', location: 'A1-03-02', requestedQty: '-30 KG', reason: 'Outbound posted during active count window', requestedBy: 'supervisor01', status: 'Pending', timestamp: '2026-06-18 09:30' },
+    { id: 'ADJ-002', sku: 'SKU-55110', location: 'B2-04-01', requestedQty: '-20 CTN', reason: 'Transfer-in not confirmed', requestedBy: 'supervisor01', status: 'Pending', timestamp: '2026-06-18 09:45' },
+    { id: 'ADJ-003', sku: 'SKU-77120', location: 'A1-01-01', requestedQty: '0', reason: 'Location mismatch correction', requestedBy: 'supervisor01', status: 'Approved', timestamp: '2026-06-18 08:15' },
+    { id: 'ADJ-004', sku: 'SKU-44220', location: 'A1-03-01', requestedQty: '-50 PCS', reason: 'Reserved quantity not updated', requestedBy: 'counter01', status: 'Rejected', timestamp: '2026-06-17 16:20' }
+];
+
+var varianceData={
+ 'SKU-88120':{loc:'A1-03-02',qtySys:'1,550 KG',qtyPhy:'1,520 KG',varQty:'-30 KG',cause:'Outbound posted during active count window',batch:'BATCH-B240520',opening:'1,450 KG',totalIn:'+520 KG',totalOut:'-420 KG',expected:'1,550 KG',tx:[['IN','Inbound GR','GR-240520-001','20/05/2026','08:10','Olga Tan','WX3','+500 KG','1,950 KG','Posted'],['OUT','Outbound Pick','OB-240520-018','20/05/2026','10:42','Wei Qiang','WX3','-320 KG','1,630 KG','During Count'],['OUT','Reserved / Pick Hold','RSV-240520-009','20/05/2026','11:20','System Auto','WX3','-50 KG','1,580 KG','Pending Pick'],['IN','Adjustment In','ADJ-240520-003','20/05/2026','12:00','Supervisor','SAP','+20 KG','1,600 KG','Reviewed'],['OUT','Manual Issue','MI-240520-007','20/05/2026','12:15','Checker 01','WX3','-50 KG','1,550 KG','Posted']]},
+ 'SKU-55110':{loc:'B2-04-01',qtySys:'860 CTN',qtyPhy:'840 CTN',varQty:'-20 CTN',cause:'Transfer-out completed but transfer-in not confirmed',batch:'LOT-55110-A',opening:'900 CTN',totalIn:'+100 CTN',totalOut:'-140 CTN',expected:'860 CTN',tx:[['OUT','Transfer Out','TRF-240520-011','20/05/2026','09:15','Ira','WX3','-120 CTN','780 CTN','Posted'],['IN','Transfer In','TRF-240520-011','20/05/2026','09:48','Pending User','WX3','+100 CTN','880 CTN','Not Confirmed'],['OUT','Internal Move','MOVE-240520-031','20/05/2026','10:05','Alwi','Mobile','-20 CTN','860 CTN','Pending Sync'],['OUT','Damage Hold','DMG-240520-004','20/05/2026','10:18','Checker 02','WX3','-20 CTN','840 CTN','Under Review']]},
+ 'SKU-44220':{loc:'A1-03-01',qtySys:'2,100 PCS',qtyPhy:'2,050 PCS',varQty:'-50 PCS',cause:'Reserved quantity not updated after pick confirmation',batch:'LOT-44220-R',opening:'2,000 PCS',totalIn:'+150 PCS',totalOut:'-50 PCS',expected:'2,100 PCS',tx:[['IN','Stock Sync','SYNC-240520-051','20/05/2026','07:55','Bot','System','+150 PCS','2,150 PCS','Synced'],['OUT','Pick Confirm','PICK-240520-078','20/05/2026','09:38','Bot','System','-50 PCS','2,100 PCS','Confirmed'],['OUT','Reserved Release','RSV-240520-078','20/05/2026','09:40','System Auto','WX3','-50 PCS','2,050 PCS','Failed Update'],['IN','Reserve Reversal','REV-240520-078','20/05/2026','10:00','System Auto','WX3','+50 PCS','2,100 PCS','Pending Interface']]},
+ 'SKU-99100':{loc:'C1-02-04',qtySys:'120 KG',qtyPhy:'0.12 TON',varQty:'UOM Check',cause:'KG vs TON conversion validation required',batch:'LOT-2405-B',opening:'0 KG',totalIn:'+120 KG',totalOut:'0 KG',expected:'120 KG',tx:[['IN','Inbound GR','GR-240519-044','19/05/2026','16:30','Receiving Team','SAP','+120 KG','120 KG','Posted'],['OUT','Sales Issue','SI-240520-002','20/05/2026','09:00','Ops Team','WX3','0 KG','120 KG','No Movement'],['IN','UOM Conversion','VAL-UOM-009','20/05/2026','10:51','System Auto','Y-Count','0.12 TON = 120 KG','120 KG','Matched']]},
+ 'SKU-88210':{loc:'WH-09-A1',qtySys:'300 PCS',qtyPhy:'280 PCS',varQty:'-20 PCS',cause:'Inbound posting delayed by interface queue',batch:'LOT-88210-Z',opening:'200 PCS',totalIn:'+100 PCS',totalOut:'0 PCS',expected:'300 PCS',tx:[['IN','Inbound Arrival','ASN-240520-088','20/05/2026','08:05','Transport Team','DMS','+100 PCS','300 PCS','Arrived'],['IN','GR Posting','GR-240520-088','20/05/2026','11:30','Receiving Team','SAP','+100 PCS','300 PCS','Interface Queue'],['OUT','Outbound Issue','OB-240520-061','20/05/2026','09:10','Warehouse Ops','WX3','0 PCS','300 PCS','No Movement'],['IN','Interface Sync','INT-240520-088','20/05/2026','11:45','System Auto','SAP/WX3','+100 PCS','300 PCS','Pending']]}
+};
+
+var damageReports = {
+    'DR-001': { id: 'DR-001', title: 'Broken Packaging - SKU-88120', description: 'Packaging torn during counting process. Product exposed to environment. Immediate quarantine required.', location: 'Zone A / A1-03-02', reportedBy: 'Ahmad Alwi', damageQty: '20 KG', severity: 'Critical', category: 'Broken Packaging', status: 'Pending QC Review', evidence: '📷 2 Photos Attached', timestamp: '2026-05-20 09:41', notes: 'Product needs to be moved to quarantine area for further inspection.' },
+    'DR-002': { id: 'DR-002', title: 'Leaking - SKU-55110', description: 'Container leak detected during transfer. Liquid substance leaking from bottom corner. Immediate containment required.', location: 'Zone B / B2-04-01', reportedBy: 'Nursyahirah Ira', damageQty: '10 CTN', severity: 'Major', category: 'Leaking', status: 'Under Investigation', evidence: '📷 1 Photo Attached', timestamp: '2026-05-20 09:44', notes: 'Containment team notified. Spill kit deployed.' },
+    'DR-003': { id: 'DR-003', title: 'Expired - SKU-44220', description: 'Product found with expired shelf life. Lot number LOT-44220-R passed expiration date. Cannot be sold or distributed.', location: 'Zone A / A1-03-01', reportedBy: 'James Timothy', damageQty: '50 PCS', severity: 'Minor', category: 'Expired', status: 'Approved for Disposal', evidence: '📷 3 Photos Attached', timestamp: '2026-05-20 09:47', notes: 'Disposal request submitted. Need manager approval for write-off.' }
+};
+
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function cls(s){s=String(s||'');if(/Posted|Synced|Matched|Confirmed|Completed|Approved/i.test(s))return 'ok';if(/Failed|Not|Rejected/i.test(s))return 'bad';if(/Pending|During|Review|Queue|Arrived|Submitted|Under Investigation/i.test(s))return 'warn';return 'info'}
+
+// ORDER FUNCTIONS
+function updateOrderBadge() {
+    var badge = document.getElementById('orderBadge');
+    if (badge) {
+        var count = countingOrders.length;
+        badge.textContent = count;
+        if (count === 0) badge.style.display = 'none';
+        else badge.style.display = 'inline-block';
+    }
+}
+
+function getOrderHeaders() {
+    var selected = [];
+    document.querySelectorAll('.order-header-checkbox').forEach(function(cb) {
+        if (cb.checked) {
+            var key = cb.dataset.key;
+            var header = templateHeaders.find(function(h) { return h.key === key; });
+            if (header) selected.push(header);
+        }
+    });
+    return selected;
+}
+
+function renderOrderHeaderSelection() {
+    var container = document.getElementById('orderHeaderSelection');
+    if (!container) return;
+    container.innerHTML = templateHeaders.map(function(h, index) {
+        return '<div class="template-header-item" data-index="' + index + '" draggable="true">' +
+            '<span class="drag-handle">⠿</span>' +
+            '<span class="header-index">#' + (index + 1) + '</span>' +
+            '<span class="header-label">' + esc(h.label) + '</span>' +
+            '<span class="header-check">' +
+            '<input type="checkbox" class="order-header-checkbox" data-key="' + h.key + '" ' + (h.checked ? 'checked' : '') + ' onchange="updateOrderPreview()">' +
+            '</span>' +
+            '</div>';
+    }).join('');
+    document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(item) {
+        item.addEventListener('dragstart', function(e) {
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.index);
+        });
+        item.addEventListener('dragend', function(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+        });
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+            this.classList.add('drag-over');
+        });
+        item.addEventListener('dragleave', function(e) { this.classList.remove('drag-over'); });
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            var fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            var toIndex = parseInt(this.dataset.index);
+            if (fromIndex !== toIndex && !isNaN(fromIndex) && !isNaN(toIndex)) {
+                var item = templateHeaders.splice(fromIndex, 1)[0];
+                templateHeaders.splice(toIndex, 0, item);
+                renderOrderHeaderSelection();
+                updateOrderPreview();
+                showToast('✅ Header order updated!');
+            }
+        });
+    });
+    updateOrderPreview();
+}
+
+function orderTabContent() {
+    return '<div class="create-order"><div class="grid2" style="margin-bottom:16px">'+
+        '<div class="card"><div class="title"><h3>📋 Order Details</h3><a>Required</a></div>'+
+        '<div class="field"><label>📌 Order Number / Request</label>'+
+        '<input id="orderNumber" class="form-input" value="COUNT-2026-001" placeholder="Enter order number or request ID..." oninput="updateOrderPreview()"></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">'+
+        '<div class="field"><label>📁 Project</label><select id="orderProject" class="form-select" onchange="updateOrderPreview()">'+
+        '<option value="">-- Select --</option><option value="CHEMSG">CHEMSG</option><option value="FMCG">FMCG</option><option value="PHARMA">PHARMA</option><option value="AUTO">AUTO</option></select></div>'+
+        '<div class="field"><label>🏢 Hub</label><select id="orderHub" class="form-select" onchange="updateOrderPreview()">'+
+        '<option value="">-- Select --</option><option value="SYMRISE">SYMRISE</option><option value="CENTRAL HUB">CENTRAL HUB</option><option value="NORTH HUB">NORTH HUB</option></select></div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">'+
+        '<div class="field"><label>📦 Warehouse</label><select id="orderWarehouse" class="form-select" onchange="updateOrderPreview()">'+
+        '<option value="">-- Select --</option><option value="CHEMPARK">CHEMPARK</option><option value="WH-A">WH-A</option><option value="WH-B">WH-B</option><option value="WH-C">WH-C</option></select></div>'+
+        '<div class="field"><label>👤 Assigned To</label><select id="orderAssignee" class="form-select">'+
+        '<option value="Ahmad Alwi">Ahmad Alwi</option><option value="Nursyahirah Ira">Nursyahirah Ira</option>'+
+        '<option value="Nur Adlina Alin">Nur Adlina Alin</option><option value="James Timothy">James Timothy</option></select></div></div>'+
+        '<div class="field"><label>📝 Notes</label><textarea id="orderNotes" class="form-textarea" rows="2" placeholder="Add notes..."></textarea></div></div>'+
+        '<div class="card"><div class="title"><h3>📋 Select Counting Headers</h3><a>Drag to reorder</a></div>'+
+        '<p class="muted" style="margin-bottom:10px;font-size:12px">Drag ⠿ to reorder headers. Check to include in counting template.</p>'+
+        '<div id="orderHeaderSelection"></div><hr style="margin:14px 0;border-color:var(--line)">'+
+        '<div class="title"><h3>👀 Order Preview</h3><a>Summary</a></div>'+
+        '<div id="orderPreview" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Order</b><br><span id="previewOrder" style="font-weight:700">-</span></div>'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Project</b><br><span id="previewProject" style="font-weight:700">-</span></div>'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Hub</b><br><span id="previewHub" style="font-weight:700">-</span></div>'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Warehouse</b><br><span id="previewWarehouse" style="font-weight:700">-</span></div>'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line);grid-column:span 2"><b style="font-size:11px;color:var(--muted)">Headers Selected</b><br><span id="previewHeaders" style="font-weight:700;font-size:12px">-</span></div>'+
+        '</div>'+
+        '<button class="primary" onclick="saveCountingOrder()" style="margin-top:14px;width:100%;padding:14px">✅ Create Order</button></div></div>';
+}
+
+function updateOrderPreview() {
+    var orderNum = document.getElementById('orderNumber').value || '-';
+    var project = document.getElementById('orderProject').value || '-';
+    var hub = document.getElementById('orderHub').value || '-';
+    var warehouse = document.getElementById('orderWarehouse').value || '-';
+    document.getElementById('previewOrder').textContent = orderNum;
+    document.getElementById('previewProject').textContent = project;
+    document.getElementById('previewHub').textContent = hub;
+    document.getElementById('previewWarehouse').textContent = warehouse;
+    var selected = [];
+    document.querySelectorAll('.order-header-checkbox:checked').forEach(function(cb) {
+        var header = templateHeaders.find(function(h) { return h.key === cb.dataset.key; });
+        if (header) selected.push(header.label);
+    });
+    document.getElementById('previewHeaders').textContent = selected.length > 0 ? selected.join(', ') : 'No headers selected';
+}
+
+function saveCountingOrder() {
+    var orderNum = document.getElementById('orderNumber').value.trim();
+    var project = document.getElementById('orderProject').value;
+    var hub = document.getElementById('orderHub').value;
+    var warehouse = document.getElementById('orderWarehouse').value;
+    var assignee = document.getElementById('orderAssignee').value;
+    var notes = document.getElementById('orderNotes').value;
+    if (!orderNum || !project || !hub || !warehouse) {
+        openModal('⚠️ Incomplete Order', 'Please fill in Order Number, Project, Hub, and Warehouse.', '⚠️');
+        return;
+    }
+    var selectedHeaders = [];
+    document.querySelectorAll('.order-header-checkbox:checked').forEach(function(cb) {
+        var header = templateHeaders.find(function(h) { return h.key === cb.dataset.key; });
+        if (header) selectedHeaders.push(header);
+    });
+    if (selectedHeaders.length === 0) {
+        openModal('⚠️ No Headers Selected', 'Please select at least one header for counting.', '⚠️');
+        return;
+    }
+    var order = { id: orderNum, project: project, hub: hub, warehouse: warehouse, assignee: assignee, notes: notes, headers: selectedHeaders, status: 'Active', createdAt: new Date().toISOString() };
+    countingOrders.push(order);
+    saveOrdersToStorage();
+    updateMobileEnvironment(order);
+    updateOrderBadge();
+    openModal('✅ Order Created', 'Order ' + order.id + ' has been created successfully!<br><br><b>Project:</b> ' + order.project + '<br><b>Hub:</b> ' + order.hub + '<br><b>Warehouse:</b> ' + order.warehouse + '<br><b>Headers:</b> ' + selectedHeaders.length + ' selected<br><b>Count Ver:</b> VER-001 (Auto)', '✅', [['Status', 'Active', 'ok'], ['Sync', 'Ready to Mobile', 'info']]);
+    showToast('✅ Order ' + order.id + ' created and synced to Mobile!');
+}
+
+function updateMobileEnvironment(order) {
+    envProject = order.project;
+    envHub = order.hub;
+    envWarehouse = order.warehouse;
+    mobileMenuReady = true;
+    // Auto set count ver ke VER-001 untuk order baru
+    mobileCountVer = 'VER-001';
+    if (order.headers && order.headers.length > 0) {
+        templateHeaders.forEach(function(h) {
+            h.checked = order.headers.some(function(oh) { return oh.key === h.key; });
+        });
+    }
+    var mobileView = document.getElementById('mobile');
+    if (mobileView && !mobileView.classList.contains('hidden')) {
+        mobileView.innerHTML = mobilePage();
+        setTimeout(function() { openPhone('dashboard'); }, 300);
+    }
+}
+
+function saveOrdersToStorage() {
+    try { localStorage.setItem('countingOrders', JSON.stringify(countingOrders)); } catch(e) {}
+}
+
+function loadOrdersFromStorage() {
+    try {
+        var saved = localStorage.getItem('countingOrders');
+        if (saved) {
+            countingOrders = JSON.parse(saved);
+            updateOrderBadge();
+        }
+    } catch(e) {}
+}
+
+function viewAllOrders() {
+    if (countingOrders.length === 0) {
+        openModal('📋 No Orders', 'No counting orders have been created yet.', '📋');
+        return;
+    }
+    var orderList = countingOrders.map(function(o) {
+        var statusClass = o.status === 'Active' ? 'ok' : 'info';
+        var headerCount = o.headers ? o.headers.length : 0;
+        return '<div class="order-list-item"><span class="order-id">' + o.id + '</span><span class="order-info">' + o.project + ' › ' + o.warehouse + '</span><span class="pill ' + statusClass + '">' + o.status + '</span><span class="pill info">' + headerCount + ' headers</span><span class="pill info">VER-001</span><button class="light" style="padding:4px 12px;font-size:11px" onclick="loadOrderToMobile(\'' + o.id + '\')">📱 Load</button></div>';
+    }).join('');
+    openModal('📋 Counting Orders (' + countingOrders.length + ')', 'List of all created counting orders. Click "Load" to sync to mobile.', '📋', [['Total Orders', String(countingOrders.length), 'info']]);
+    document.getElementById('modalRows').innerHTML = orderList;
+}
+
+function loadOrderToMobile(orderId) {
+    var order = countingOrders.find(function(o) { return o.id === orderId; });
+    if (!order) {
+        openModal('❌ Not Found', 'Order ' + orderId + ' not found.', '❌');
+        return;
+    }
+    updateMobileEnvironment(order);
+    showView('mobile');
+    showToast('📱 Order ' + orderId + ' loaded to mobile! (VER-001)');
+}
+
+// UPLOAD PAGE
+function uploadPage() {
+    var headerItems = templateHeaders.map(function(h, index) {
+        return '<div class="template-header-item" data-index="' + index + '">' +
+            '<span class="drag-handle">⠿</span><span class="header-index">#' + (index + 1) + '</span>' +
+            '<span class="header-label">' + esc(h.label) + '</span>' +
+            '<span class="header-check"><input type="checkbox" ' + (h.checked ? 'checked' : '') + ' onchange="toggleTemplateHeader(\'' + h.key + '\', this.checked)"></span></div>';
+    }).join('');
+    var checkedHeaders = templateHeaders.filter(function(h) { return h.checked; });
+    var previewRows = sampleDataKeys.map(function(key) {
+        var row = masterSampleData[key] || {};
+        var cells = checkedHeaders.map(function(h) { return '<td>' + esc(row[h.key] || '') + '</td>'; }).join('');
+        return '<tr>' + cells + '</tr>';
+    }).join('');
+    var templateContent = '<div class="card"><div class="title"><h3>📋 Customize Template Headers</h3><a>Drag to reorder</a></div>'+
+        '<p class="muted" style="margin-bottom:12px;font-size:13px">Drag ⠿ to reorder headers. Check/uncheck to include/exclude from template.</p>'+
+        '<div class="header-sortable-list" id="headerSortableList">' + headerItems + '</div>'+
+        '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'+
+        '<button class="light" onclick="resetTemplateHeaders()" style="padding:8px 16px;font-size:12px">↺ Reset to Default</button>'+
+        '<button class="light" onclick="saveHeaderOrder()" style="padding:8px 16px;font-size:12px;background:var(--soft-green);border-color:var(--green)">💾 Save Order</button></div></div>'+
+        '<div class="card"><div class="title"><h3>📊 Sample Data Preview</h3><a>Auto generated</a></div>'+
+        '<div style="overflow:auto;max-height:200px"><table><thead><tr>' + checkedHeaders.map(function(h){return '<th>'+h.label+'</th>'}).join('') +
+        '</tr></thead><tbody id="samplePreviewBody">' + previewRows + '</tbody></table></div>'+
+        '<p class="muted" style="margin-top:8px;font-size:12px">Header order will follow the order above.</p></div>'+
+        '<section id="uploadPreview" class="grid2 hidden"><div class="card"><div class="title"><h3>Uploaded Data Preview</h3><a>Transferred to UI</a></div>'+
+        '<div style="overflow:auto"><table><thead><tr><th>Line</th>'+checkedHeaders.map(function(h){return '<th>'+h.label+'</th>'}).join('')+'<th>Status</th></tr></thead><tbody id="uploadPreviewRows"></tbody></table></div></div>'+
+        '<div class="card"><div class="title"><h3>Next Action</h3><a>Workflow</a></div><div class="status"><div class="status-row"><b>Validation</b><span class="pill ok">Passed</span></div><div class="status-row"><b>Multi Location SKU</b><span class="pill ok">Allowed</span></div><div class="status-row"><b>Unique Logic</b><span class="pill info">SKU + Batch + Location</span></div></div><button class="submit" onclick="openBlankCount()">Continue to Action</button></div></section>'+
+        '<section class="modules"><div class="module click" onclick="triggerUpload()"><div class="module-icon green">📥</div><h4>Count Plan Upload</h4><p class="muted">Upload warehouse, location, SKU and PID.</p></div>'+
+        '<div class="module click" onclick="triggerUpload()"><div class="module-icon blue">📤</div><h4>Result Upload</h4><p class="muted">Upload result and transfer to UI.</p></div>'+
+        '<div class="module click" onclick="openModal(\'Error Preview\',\'Validation checks missing batch/lot, invalid UOM and duplicate location.\',\'⚠️\')"><div class="module-icon orange">⚠️</div><h4>Error Preview</h4><p class="muted">Preview invalid rows.</p></div>'+
+        '<div class="module click" onclick="openModal(\'Upload History\',\'Latest uploads recorded with status.\',\'📜\')"><div class="module-icon purple">📜</div><h4>Upload History</h4><p class="muted">Audit file and status.</p></div></section>';
+    var orderContent = orderTabContent();
+    return '<div class="head"><div><h1>📥 Upload & Import</h1><p>Customize template headers, upload data, and create counting orders.</p></div><div class="actions">'+
+        '<button class="primary" onclick="downloadCustomTemplate()">📥 Download Template</button>'+
+        '<button class="light" onclick="triggerUpload()">📤 Upload Excel</button>'+
+        '<button class="light" onclick="autoGenerateUploadData()">⚡ Auto Generate Data</button>'+
+        '<button class="light" onclick="viewAllOrders()">📋 View Orders (' + countingOrders.length + ')</button></div></div>'+
+        '<div class="upload-tabs"><button class="upload-tab ' + (currentUploadTab === 'template' ? 'active' : '') + '" onclick="switchUploadTab(\'template\')">📄 Upload Result</button>'+
+        '<button class="upload-tab ' + (currentUploadTab === 'order' ? 'active' : '') + '" onclick="switchUploadTab(\'order\')">📋 Create Order</button></div>'+
+        '<div id="uploadTemplateContent" class="' + (currentUploadTab === 'template' ? '' : 'hidden') + '">' + templateContent + '</div>'+
+        '<div id="uploadOrderContent" class="' + (currentUploadTab === 'order' ? '' : 'hidden') + '">' + orderContent + '</div>';
+}
+
+function switchUploadTab(tab) {
+    currentUploadTab = tab;
+    document.querySelectorAll('.upload-tab').forEach(function(btn) { btn.classList.remove('active'); });
+    var tabs = document.querySelectorAll('.upload-tab');
+    if (tab === 'template') {
+        tabs[0].classList.add('active');
+        document.getElementById('uploadTemplateContent').classList.remove('hidden');
+        document.getElementById('uploadOrderContent').classList.add('hidden');
+    } else {
+        tabs[1].classList.add('active');
+        document.getElementById('uploadTemplateContent').classList.add('hidden');
+        document.getElementById('uploadOrderContent').classList.remove('hidden');
+        setTimeout(function() { renderOrderHeaderSelection(); updateOrderPreview(); }, 100);
+    }
+}
+
+// DRAG & DROP FUNCTIONS
+var draggedIndex = null;
+
+function renderSortableHeaders() {
+    var container = document.getElementById('headerSortableList');
+    if (!container) return;
+    container.innerHTML = '';
+    templateHeaders.forEach(function(h, index) {
+        var item = document.createElement('div');
+        item.className = 'template-header-item';
+        item.draggable = true;
+        item.dataset.index = index;
+        item.innerHTML = '<span class="drag-handle">⠿</span><span class="header-index">#'+(index+1)+'</span><span class="header-label">'+esc(h.label)+'</span><span class="header-check"><input type="checkbox" '+(h.checked?'checked':'')+' onchange="toggleTemplateHeader(\''+h.key+'\', this.checked)"></span>';
+        item.addEventListener('dragstart', function(e) {
+            draggedIndex = parseInt(this.dataset.index);
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.index);
+        });
+        item.addEventListener('dragend', function(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+        });
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            document.querySelectorAll('.template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+            this.classList.add('drag-over');
+        });
+        item.addEventListener('dragleave', function(e) { this.classList.remove('drag-over'); });
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            var fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            var toIndex = parseInt(this.dataset.index);
+            if (fromIndex !== toIndex && !isNaN(fromIndex) && !isNaN(toIndex)) {
+                var item = templateHeaders.splice(fromIndex, 1)[0];
+                templateHeaders.splice(toIndex, 0, item);
+                renderSortableHeaders();
+                updateSamplePreview();
+                showToast('✅ Header order updated!');
+            }
+        });
+        container.appendChild(item);
+    });
+}
+
+function updateSamplePreview() {
+    var previewContainer = document.getElementById('samplePreviewBody');
+    if (!previewContainer) return;
+    var checkedHeaders = templateHeaders.filter(function(h) { return h.checked; });
+    previewContainer.innerHTML = sampleDataKeys.map(function(key) {
+        var row = masterSampleData[key] || {};
+        var cells = checkedHeaders.map(function(h) { return '<td>'+esc(row[h.key]||'')+'</td>'; }).join('');
+        return '<tr>'+cells+'</tr>';
+    }).join('');
+}
+
+function saveHeaderOrder() {
+    renderSortableHeaders();
+    updateSamplePreview();
+    showToast('✅ Header order saved!');
+    openModule('upload');
+}
+
+function toggleTemplateHeader(key, checked) {
+    var header = templateHeaders.find(function(h){return h.key===key});
+    if(header) { header.checked = checked; openModule('upload'); }
+}
+
+function resetTemplateHeaders() {
+    var defaults = [
+        { key: 'product_code', label: 'Product Code', checked: true },
+        { key: 'batch_lot', label: 'Batch / Lot No', checked: true },
+        { key: 'physical_location', label: 'Physical Location', checked: true },
+        { key: 'physical_qty', label: 'Physical Actual Qty', checked: true },
+        { key: 'uom', label: 'UOM', checked: true },
+        { key: 'count_type', label: 'Count Type', checked: true },
+        { key: 'remarks', label: 'Remarks', checked: false },
+        { key: 'zone', label: 'Zone', checked: false },
+        { key: 'pid', label: 'PID / Pallet ID', checked: false },
+        { key: 'expected_qty', label: 'Expected Qty', checked: false }
+    ];
+    templateHeaders = defaults;
+    openModule('upload');
+    showToast('✅ Template headers reset to default');
+}
+
+function downloadCustomTemplate() {
+    var headers = templateHeaders.filter(function(h){return h.checked});
+    var headerLabels = headers.map(function(h){return h.label});
+    var sampleRow = headers.map(function(h){
+        var sampleDataMap = { 'product_code': 'SKU-77120', 'batch_lot': 'LOT-2405-A', 'physical_location': 'B2-03-05', 'physical_qty': '500', 'uom': 'PCS', 'count_type': 'Blank Count', 'remarks': 'Location mismatch', 'zone': 'Zone A', 'pid': 'PALLET-001', 'expected_qty': '500' };
+        return sampleDataMap[h.key] || '';
+    });
+    var rows = [headerLabels, sampleRow];
+    downloadExcel(rows, 'Y-Count_Custom_Template.xls');
+    showToast('✅ Custom template downloaded with ' + headers.length + ' columns');
+}
+
+function autoGenerateUploadData() {
+    var headers = templateHeaders.filter(function(h){return h.checked});
+    var headerLabels = headers.map(function(h){return h.label});
+    var rows = [headerLabels];
+    sampleDataKeys.forEach(function(key) {
+        var row = masterSampleData[key] || {};
+        var mappedRow = headers.map(function(h) { return row[h.key] || ''; });
+        rows.push(mappedRow);
+    });
+    downloadExcel(rows, 'Y-Count_Auto_Generated_Data.xls');
+    showToast('✅ Auto generated data downloaded with ' + (rows.length - 1) + ' rows');
+    openModal('📊 Auto Generated Data', (rows.length - 1) + ' rows generated!', '📊', [['Status','Ready to use','ok'],['Rows',String(rows.length - 1),'info']]);
+}
+
+// Discrepancy Trend Analysis Page
+function discrepancyTrendPage() {
+    var weeklyBars = discrepancyTrendData.weekly.map(function(d) {
+        var height = Math.max(10, (d.value / 12) * 120);
+        return '<div class="chart-bar-group"><div class="chart-bar" style="height:'+height+'px;background:'+d.color+'"></div><div class="chart-bar-value">'+d.value+'</div><div class="chart-bar-label">'+d.label+'</div></div>';
+    }).join('');
+    var monthlyBars = discrepancyTrendData.monthly.map(function(d) {
+        var height = Math.max(10, (d.value / 15) * 120);
+        return '<div class="chart-bar-group"><div class="chart-bar" style="height:'+height+'px;background:'+d.color+'"></div><div class="chart-bar-value">'+d.value+'</div><div class="chart-bar-label">'+d.label+'</div></div>';
+    }).join('');
+    var zoneBars = discrepancyTrendData.byZone.map(function(d) {
+        var height = Math.max(10, (d.value / 5) * 120);
+        return '<div class="chart-bar-group"><div class="chart-bar" style="height:'+height+'px;background:'+d.color+'"></div><div class="chart-bar-value">'+d.value+'</div><div class="chart-bar-label">'+d.label+'</div></div>';
+    }).join('');
+    var typeBars = discrepancyTrendData.byType.map(function(d) {
+        var height = Math.max(10, (d.value / 6) * 120);
+        return '<div class="chart-bar-group"><div class="chart-bar" style="height:'+height+'px;background:'+d.color+'"></div><div class="chart-bar-value">'+d.value+'</div><div class="chart-bar-label">'+d.label+'</div></div>';
+    }).join('');
+    var trendData = [
+        { label: 'Weekly Trend', value: '↓ 28%', type: 'down', detail: 'Discrepancy decreased from 12 to 8 this week' },
+        { label: 'Monthly Trend', value: '↓ 40%', type: 'down', detail: 'Significant improvement from 15 to 5 cases' },
+        { label: 'Zone A vs B', value: '+2 cases', type: 'up', detail: 'Zone A has more discrepancies than Zone B' },
+        { label: 'Qty Variance', value: '6 cases', type: 'flat', detail: 'Most common discrepancy type' }
+    ];
+    var trends = trendData.map(function(t) {
+        var cls = t.type === 'down' ? 'trend-down' : (t.type === 'up' ? 'trend-up' : 'trend-flat');
+        return '<div class="trend-line"><span class="trend-label">'+t.label+'</span><span><span class="trend-value '+cls+'">'+t.value+'</span><br><small style="color:var(--muted)">'+t.detail+'</small></span></div>';
+    }).join('');
+    return '<div class="head"><div><h1>📊 Discrepancy Trend Analysis</h1><p>Comprehensive analysis of discrepancy patterns, trends, and root causes across all zones.</p></div><div class="actions"><button class="light" onclick="exportExcelDemo(\'Discrepancy_Trend_Analysis.xlsx\')">📥 Export Report</button><button class="primary" onclick="openModal(\'Analysis Insight\',\'Overall discrepancy rate is trending downward with 28% improvement this week. Qty variance remains the top contributor.\',\'💡\')">💡 Get Insights</button></div></div>'+
+    '<section class="kpis" style="grid-template-columns:repeat(4,1fr)"><div class="card kpi glow-card"><small>Total Discrepancies</small><h2 class="stat-number">42</h2><p>Last 30 days</p><div class="icon red">📊</div></div><div class="card kpi glow-card"><small>Weekly Change</small><h2 style="color:var(--green)">-28%</h2><p>Improvement</p><div class="icon green">📉</div></div><div class="card kpi glow-card"><small>Top Zone</small><h2 style="font-size:28px;color:var(--orange)">Zone A</h2><p>5 cases this week</p><div class="icon orange">📍</div></div><div class="card kpi glow-card"><small>Top Type</small><h2 style="font-size:26px;color:var(--blue)">Qty Variance</h2><p>6 cases</p><div class="icon blue">🎯</div></div></section>'+
+    '<section class="grid2"><div class="card"><div class="title"><h3>Weekly Discrepancy Trend</h3><a>Last 7 days</a></div><div class="chart-container"><div class="chart-bars">'+weeklyBars+'</div></div></div><div class="card"><div class="title"><h3>Monthly Trend</h3><a>Last 6 months</a></div><div class="chart-container"><div class="chart-bars">'+monthlyBars+'</div></div></div></section>'+
+    '<section class="grid2"><div class="card"><div class="title"><h3>Discrepancy by Zone</h3><a>Distribution</a></div><div class="chart-container"><div class="chart-bars">'+zoneBars+'</div></div></div><div class="card"><div class="title"><h3>Discrepancy by Type</h3><a>Classification</a></div><div class="chart-container"><div class="chart-bars">'+typeBars+'</div></div></div></section>'+
+    '<section class="card"><div class="title"><h3>Key Trend Insights</h3><a>Analysis</a></div><div class="status">'+trends+'</div></section>'+
+    '<section class="modules" style="margin-top:16px"><div class="module click" onclick="openVarianceSKU(\'SKU-88120\')"><div class="module-icon red">🔍</div><h4>Deep Dive: Top Variance</h4><p class="muted">SKU-88120 - 30 KG variance</p></div><div class="module click" onclick="openBlankCount()"><div class="module-icon orange">📍</div><h4>Location Analysis</h4><p class="muted">3 location mismatch cases</p></div><div class="module click" onclick="openModal(\'UOM Analysis\',\'2 UOM conversion errors detected. Check KG vs TON and PCS vs CTN.\',\'📐\')"><div class="module-icon blue">📐</div><h4>UOM Analysis</h4><p class="muted">2 conversion issues</p></div><div class="module click" onclick="openModal(\'Recommendation\',\'Implement double-count validation for Zone A. Review outbound posting process.\',\'💡\')"><div class="module-icon purple">💡</div><h4>Recommendations</h4><p class="muted">Actionable insights</p></div></section>';
+}
+
+// Adjustment Functions
+function getPendingCount() { return adjustmentRequests.filter(r => r.status === 'Pending').length; }
+function updateAdjBadge() {
+    var badge = document.getElementById('adjBadge');
+    if (badge) {
+        var count = getPendingCount();
+        badge.textContent = count;
+        if (count === 0) badge.style.display = 'none';
+        else badge.style.display = 'inline-block';
+    }
+}
+
+function adjustmentPage() {
+    var isSupervisor = currentRole === 'Supervisor' || currentRole === 'Manager';
+    var isManager = currentRole === 'Manager';
+    var canCreate = currentRole === 'Supervisor';
+    var canApprove = currentRole === 'Manager';
+    var pendingRows = adjustmentRequests.filter(r => r.status === 'Pending').map(function(r) {
+        var actions = '';
+        if (canApprove) {
+            actions = '<button class="btn-approve" onclick="approveAdjustment(\''+r.id+'\')">✓ Approve</button> <button class="btn-reject" onclick="rejectAdjustment(\''+r.id+'\')">✗ Reject</button>';
+        } else if (r.requestedBy === currentUser && r.status === 'Pending') {
+            actions = '<span class="pill warn">Waiting Approval</span>';
+        } else {
+            actions = '<span class="pill warn">Pending</span>';
+        }
+        return '<tr><td><b>'+r.id+'</b></td><td>'+r.sku+'</td><td>'+r.location+'</td><td>'+r.requestedQty+'</td><td>'+r.reason+'</td><td>'+r.requestedBy+'</td><td><span class="pill warn">'+r.status+'</span></td><td>'+actions+'</td></tr>';
+    }).join('');
+    var historyRows = adjustmentRequests.filter(r => r.status !== 'Pending').map(function(r) {
+        var statusClass = r.status === 'Approved' ? 'ok' : 'bad';
+        return '<tr><td><b>'+r.id+'</b></td><td>'+r.sku+'</td><td>'+r.location+'</td><td>'+r.requestedQty+'</td><td>'+r.reason+'</td><td>'+r.requestedBy+'</td><td><span class="pill '+statusClass+'">'+r.status+'</span></td><td>'+r.timestamp+'</td></tr>';
+    }).join('');
+    var createBtn = canCreate ? '<button class="primary" onclick="openCreateAdjustment()">➕ Create Adjustment Request</button>' : '';
+    return '<div class="head"><div><h1>Adjustment Request Management</h1><p>Create, review, and approve inventory adjustment requests.</p></div><div class="actions">'+createBtn+'</div></div>'+
+    '<section class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="card kpi glow-card"><small>Total Requests</small><h2 class="stat-number">'+adjustmentRequests.length+'</h2><p>All time</p><div class="icon blue">📋</div></div><div class="card kpi glow-card"><small>Pending Approval</small><h2 class="stat-number" style="color:var(--orange)">'+getPendingCount()+'</h2><p>Awaiting action</p><div class="icon orange">⏳</div></div><div class="card kpi glow-card"><small>Approved</small><h2 class="stat-number" style="color:var(--green)">'+adjustmentRequests.filter(r=>r.status==='Approved').length+'</h2><p>Completed</p><div class="icon green">✅</div></div></section>'+
+    '<section class="grid2"><div class="card"><div class="title"><h3>Pending Requests</h3><a>'+getPendingCount()+' waiting</a></div><div style="overflow:auto"><table style="min-width:900px"><thead><tr><th>ID</th><th>SKU</th><th>Location</th><th>Qty</th><th>Reason</th><th>Requested By</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+(pendingRows||'<tr><td colspan="8"><p class="muted">No pending requests</p></td></tr>')+'</tbody></table></div></div><div class="card"><div class="title"><h3>Approval Workflow</h3><a>Role-based</a></div><div class="status"><div class="status-row"><b>Counter</b><span class="pill info">View Only</span></div><div class="status-row"><b>Supervisor</b><span class="pill ok">Create Request</span></div><div class="status-row"><b>Manager</b><span class="pill ok">Approve / Reject</span></div></div>'+
+    (isManager ? '<div style="margin-top:12px;padding:12px;background:var(--soft-green);border-radius:12px"><b>✅ You have Manager access</b><br><small>You can approve or reject pending requests.</small></div>' : '')+
+    (isSupervisor && !isManager ? '<div style="margin-top:12px;padding:12px;background:var(--soft-blue);border-radius:12px"><b>📝 You have Supervisor access</b><br><small>You can create adjustment requests.</small></div>' : '')+
+    '</div></section><section class="card"><div class="title"><h3>Request History</h3><a>Audit Trail</a></div><div style="overflow:auto"><table><thead><tr><th>ID</th><th>SKU</th><th>Location</th><th>Qty</th><th>Reason</th><th>Requested By</th><th>Status</th><th>Timestamp</th></tr></thead><tbody>'+(historyRows||'<tr><td colspan="8"><p class="muted">No history</p></td></tr>')+'</tbody></table></div></section>';
+}
+
+function openCreateAdjustment() {
+    var rows = [
+        ['SKU', '<input id="adjSku" value="SKU-88120" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px">', 'info'],
+        ['Location', '<input id="adjLoc" value="A1-03-02" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px">', 'info'],
+        ['Adjustment Qty', '<input id="adjQty" value="-30 KG" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px">', 'warn'],
+        ['Reason', '<input id="adjReason" value="Physical count variance" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px">', 'info']
+    ];
+    openModalWithCallback('Create Adjustment Request','Fill in the details below to submit a new adjustment request.','📝',rows,'Submit Request',function() {
+        var sku = document.getElementById('adjSku').value.trim();
+        var loc = document.getElementById('adjLoc').value.trim();
+        var qty = document.getElementById('adjQty').value.trim();
+        var reason = document.getElementById('adjReason').value.trim();
+        if (!sku || !loc || !qty || !reason) { openModal('Error', 'All fields are required.', '⚠️'); return; }
+        var newId = 'ADJ-' + String(adjustmentRequests.length + 1).padStart(3, '0');
+        adjustmentRequests.push({ id: newId, sku: sku, location: loc, requestedQty: qty, reason: reason, requestedBy: currentUser || 'supervisor01', status: 'Pending', timestamp: new Date().toLocaleString() });
+        updateAdjBadge(); closeModal(); openModule('adjustment'); showToast('✅ Adjustment request ' + newId + ' created successfully!');
+    });
+}
+function approveAdjustment(id) { var req = adjustmentRequests.find(r => r.id === id); if(req){ req.status='Approved'; updateAdjBadge(); openModule('adjustment'); showToast('✅ Adjustment '+id+' approved!'); } }
+function rejectAdjustment(id) { var req = adjustmentRequests.find(r => r.id === id); if(req){ req.status='Rejected'; updateAdjBadge(); openModule('adjustment'); showToast('❌ Adjustment '+id+' rejected.'); } }
+function openModalWithCallback(title,text,icon,rows,btnText,callback) {
+    document.getElementById('modal').style.display='flex';
+    document.getElementById('modalIcon').innerHTML=icon||'✓';
+    document.getElementById('modalTitle').innerText=title;
+    document.getElementById('modalText').innerText=text;
+    var data=rows||[['Status','Active','ok']];
+    document.getElementById('modalRows').innerHTML=data.map(function(r){return '<div class="status-row"><b>'+esc(r[0])+'</b><span>'+r[1]+'</span></div>'}).join('');
+    var closeBtn=document.querySelector('.modal-card .submit');
+    closeBtn.textContent=btnText||'Close';
+    closeBtn.onclick=function(){ if(callback) callback(); else closeModal(); };
+    var oldClose=document.querySelector('.modal-card .close');
+    oldClose.onclick=function(){ closeModal(); };
+}
+function openDamageReport(reportId) {
+    var report = damageReports[reportId];
+    if(!report){ openModal('Report Not Found','Damage report ID: '+reportId+' not found.','⚠️'); return; }
+    var rows = [['Report ID',report.id,'info'],['Category',report.category,'warn'],['Severity',report.severity,report.severity==='Critical'?'bad':(report.severity==='Major'?'warn':'info')],['Location',report.location,'info'],['Reported By',report.reportedBy,'ok'],['Damage Qty',report.damageQty,'bad'],['Status',report.status,report.status.includes('Pending')?'warn':'ok'],['Evidence',report.evidence,'info'],['Timestamp',report.timestamp,'info']];
+    openModal(report.title,report.description+'\n\n'+report.notes,'📋',rows);
+}
+
+function dashboard(){
+ return '<div class="head"><div><h1>Enhanced Y-Count Dashboard</h1><p>Realtime stock count overview, upload, report export and inventory accuracy.</p></div><div class="actions"><button class="light" onclick="generatePDFReport()">Generate Report</button><button class="light" onclick="triggerUpload()">Upload Excel</button><input id="uploadInput" type="file" accept=".csv,.xls,.xlsx" style="display:none" onchange="handleUpload(event)"><button class="primary" onclick="openModal(\'Start New Count\',\'New count workflow opened.\',\'▶️\')">Start New Count</button></div></div>'+
+ '<section class="kpis" style="grid-template-columns:repeat(4,1fr)"><div class="card kpi click glow-card" onclick="openModule(\'stock\')"><small>Total Count Jobs</small><h2 class="stat-number">128</h2><p>Active jobs</p><div class="icon blue">📋</div></div><div class="card kpi click glow-card" onclick="openModule(\'reports\')"><small>Completed</small><h2 class="stat-number" style="color:var(--green)">96</h2><p>75% completion</p><div class="icon green">✓</div></div><div class="card kpi click glow-card" onclick="openModule(\'stock\')"><small>In Progress</small><h2 class="stat-number" style="color:var(--orange)">24</h2><p>Active count</p><div class="icon orange">⏱</div></div><div class="card kpi click glow-card" onclick="openModule(\'discrepancy\')"><small>Discrepancies</small><h2 class="stat-number" style="color:var(--red)">9</h2><p>Variance issues</p><div class="icon red">!</div></div></section>'+
+ '<section class="grid3"><div class="card"><div class="title"><h3>Count Progress Overview</h3><a>View</a></div><div class="donut-wrap"><div class="donut"><div class="donut-in"><b>75%</b></div></div><div class="legend"><div class="legend-row"><span>Completed</span><b>96</b></div><div class="legend-row"><span>In Progress</span><b>24</b></div><div class="legend-row"><span>Not Started</span><b>8</b></div></div></div></div><div class="card"><div class="title"><h3>Count Progress by Zone</h3><a>Live</a></div><div class="bar-list"><div class="bar-line"><b>Zone A</b><div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div><span>90%</span></div><div class="bar-line"><b>Zone B</b><div class="bar-bg"><div class="bar-fill" style="width:75%"></div></div><span>75%</span></div><div class="bar-line"><b>Zone C</b><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div><span>60%</span></div></div></div><div class="card click" onclick="openModule(\'discrepancy\')"><div class="title"><h3>Discrepancy Summary</h3><a>Review</a></div><div class="donut-wrap"><div class="donut red-donut"><div class="donut-in"><b>9</b></div></div><div class="legend"><div class="legend-row"><span>Pending</span><b>5</b></div><div class="legend-row"><span>Recount</span><b>2</b></div><div class="legend-row"><span>Resolved</span><b>2</b></div></div></div></div></section>'+
+ '<section class="grid2"><div class="card"><div class="title"><h3>Realtime Count Activity</h3><a>Live</a></div><div class="chart"><div class="chart-area"></div><div style="position:absolute;top:18px;left:18px"><b>Live Count Submission Trend</b><p class="muted">Counts submitted per hour.</p></div><div class="chart-labels"><span>08:00</span><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span><span>13:00</span></div></div></div><div class="card"><div class="title"><h3>Live Exception Centre</h3><a>Auto</a></div><div class="feed"><div class="feed-item click" onclick="openVarianceSKU(\'SKU-88120\')"><div class="feed-icon red">!</div><div><b>SKU-88120 Variance</b><p>Outbound during active count.</p></div><span>2m</span></div><div class="feed-item click" onclick="openVarianceSKU(\'SKU-55110\')"><div class="feed-icon orange">⇄</div><div><b>Transfer Validation</b><p>Transfer-in not confirmed.</p></div><span>4m</span></div><div class="feed-item click" onclick="openBlankCount()"><div class="feed-icon orange">📍</div><div><b>Location Mismatch</b><p>Qty and lot match, location different.</p></div><span>5m</span></div></div></div></section>'+
+ '<section class="grid2"><div class="card"><div class="title"><h3>Realtime Inventory Accuracy Monitoring</h3><a>Live</a></div><div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px"><div class="card kpi" style="min-height:105px;box-shadow:none"><small>Inventory Accuracy</small><h2>97.4%</h2><p>After validation</p></div><div class="card kpi" style="min-height:105px;box-shadow:none"><small>Count Accuracy</small><h2>94.8%</h2><p>Physical vs system</p></div><div class="card kpi" style="min-height:105px;box-shadow:none"><small>Location Accuracy</small><h2>91.2%</h2><p>Location match</p></div></div><div class="bar-list"><div class="bar-line" style="grid-template-columns:130px 1fr 48px"><b>SKU Accuracy</b><div class="bar-bg"><div class="bar-fill" style="width:97%"></div></div><span>97%</span></div><div class="bar-line" style="grid-template-columns:130px 1fr 48px"><b>Batch/Lot Accuracy</b><div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div><span>95%</span></div><div class="bar-line" style="grid-template-columns:130px 1fr 48px"><b>Qty Accuracy</b><div class="bar-bg"><div class="bar-fill" style="width:98%"></div></div><span>98%</span></div></div></div><div class="card"><div class="title"><h3>Live Counting by Zone</h3><a>Active Users</a></div><div class="status"><div class="status-row"><b>Zone A • Ahmad Alwi</b><span class="pill info">Counting SKU-88120</span></div><div class="status-row"><b>Zone B • Nursyahirah Ira</b><span class="pill warn">Recount SKU-55110</span></div><div class="status-row"><b>Zone C • Alin</b><span class="pill ok">Blank Count Check</span></div></div></div></section>'+
+ '<section class="grid2"><div class="card"><div class="title"><h3>Quality & Damage Monitoring</h3><a>Realtime</a></div><div class="status"><div class="status-row"><b>Quality Pass Rate</b><span class="pill ok">95%</span></div><div class="status-row"><b>Damage Cases</b><span class="pill bad">6</span></div><div class="status-row"><b>Critical Damage</b><span class="pill warn">1</span></div><div class="status-row"><b>Pending QC</b><span class="pill info">2</span></div></div></div><div class="card"><div class="title"><h3>Latest Damage Reports</h3><a>Live</a></div><div class="feed"><div class="feed-item click" onclick="openDamageReport(\'DR-001\')"><div class="feed-icon red">!</div><div><b>DR-001</b><p>Broken Packaging - SKU-88120<br>Zone A / A1-03-02<br>Reported By: Ahmad Alwi<br>Damage Qty: 20 KG</p></div><span>Critical</span></div><div class="feed-item click" onclick="openDamageReport(\'DR-002\')"><div class="feed-icon orange">!</div><div><b>DR-002</b><p>Leaking - SKU-55110</p></div><span>Major</span></div><div class="feed-item click" onclick="openDamageReport(\'DR-003\')"><div class="feed-icon orange">!</div><div><b>DR-003</b><p>Expired - SKU-44220</p></div><span>Minor</span></div></div></div></section>'+
+ '<section class="grid2"><div class="card"><div class="title"><h3>Live Quality Activity</h3><a>Realtime</a></div><div class="status"><div class="status-row"><b>09:41 Alwi</b><span class="pill ok">Quality Good</span></div><div class="status-row"><b>09:44 Ira</b><span class="pill warn">Broken Packaging</span></div><div class="status-row"><b>09:47 James</b><span class="pill bad">Leaking</span></div></div></div><div class="card"><div class="title"><h3>Damage by Zone</h3><a>Analysis</a></div><div class="status"><div class="status-row"><b>Zone A</b><span>3</span></div><div class="status-row"><b>Zone B</b><span>2</span></div><div class="status-row"><b>Zone C</b><span>1</span></div></div></div></section>'+
+ '<section class="quick"><div class="quick-item" onclick="openModal(\'Start Count\',\'New count workflow opened.\',\'▶️\')"><div>▶️</div>Start Count</div><div class="quick-item" onclick="triggerUpload()"><div>📥</div>Upload Excel</div><div class="quick-item" onclick="showView(\'mobile\')"><div>☁️</div>Mobile / Offline</div><div class="quick-item" onclick="openModule(\'discrepancy\')"><div>🚨</div>Discrepancy</div><div class="quick-item" onclick="generatePDFReport()"><div>📄</div>Report PDF</div><div class="quick-item" onclick="showView(\'team\')"><div>👥</div>Team</div></section>';
+}
+function variancePage(sku){var d=varianceData[sku]||varianceData['SKU-88120'];currentSku=sku;var rows=d.tx.map(function(t){return '<tr><td><span class="pill '+(t[0]==='IN'?'ok':'bad')+'">'+t[0]+'</span></td><td><b>'+esc(t[1])+'</b></td><td>'+esc(t[2])+'</td><td>'+esc(t[3])+'</td><td>'+esc(t[4])+'</td><td>'+esc(t[5])+'</td><td>'+esc(t[6])+'</td><td>'+esc(t[7])+'</td><td><b>'+esc(t[8])+'</b></td><td><span class="pill '+cls(t[9])+'">'+esc(t[9])+'</span></td></tr>'}).join('');return '<div class="head"><div><h1>Auto Result Validation – '+esc(sku)+'</h1><p>Opening Balance + Total Inbound - Total Outbound = Expected Stock On Hand.</p></div><div class="actions"><button class="light" onclick="exportExcelDemo(\'Variance Analysis Report.xlsx\')">Export Analysis</button><button class="primary" onclick="openModal(\'Recount Task Created\',\'Auto recount task assigned.\',\'🔁\')">Create Recount Task</button></div></div><section class="kpis" style="grid-template-columns:repeat(4,1fr)"><div class="card kpi glow-card"><small>Variance SKU</small><h2 style="font-size:26px">'+esc(sku)+'</h2><p>'+esc(d.loc)+' • '+esc(d.batch)+'</p><div class="icon red">⚠</div></div><div class="card kpi glow-card"><small>System Qty</small><h2 style="font-size:28px">'+esc(d.qtySys)+'</h2><p>Available + Reserved</p></div><div class="card kpi glow-card"><small>Physical Qty</small><h2 style="font-size:28px">'+esc(d.qtyPhy)+'</h2><p>Mobile counted</p></div><div class="card kpi glow-card"><small>Variance</small><h2 style="font-size:28px;color:var(--red)">'+esc(d.varQty)+'</h2><p>Requires validation</p></div></div></section><section class="grid2"><div class="card"><div class="title"><h3>Real Stock Movement Logic</h3><a>IN - OUT = SOH</a></div><div class="status" style="margin-bottom:14px"><div class="status-row"><b>Opening Balance</b><span>'+esc(d.opening)+'</span></div><div class="status-row"><b>Total Inbound</b><span class="pill ok">'+esc(d.totalIn)+'</span></div><div class="status-row"><b>Total Outbound</b><span class="pill bad">'+esc(d.totalOut)+'</span></div><div class="status-row"><b>Expected SOH</b><span class="pill info">'+esc(d.expected)+'</span></div><div class="status-row"><b>Physical Count</b><span class="pill warn">'+esc(d.qtyPhy)+'</span></div></div><div style="overflow:auto"><table style="min-width:1060px"><thead><tr><th>Flow</th><th>Document Type</th><th>Reference</th><th>Doc Date</th><th>Posting Time</th><th>PIC/User</th><th>Source System</th><th>Qty Impact</th><th>Running SOH</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div></div><div class="card"><div class="title"><h3>Root Cause</h3><a>Rule Check</a></div><div class="status"><div class="status-row"><b>Likely Cause</b><span class="pill bad">'+esc(d.cause)+'</span></div><div class="status-row"><b>Location</b><span>'+esc(d.loc)+'</span></div><div class="status-row"><b>Suggested Action</b><span class="pill info">Verify + Recount</span></div><div class="status-row"><b>Approval</b><span class="pill warn">Supervisor</span></div></div></div></section>'}
+function blankPage(){return '<div class="head"><div><h1>Blank Count / Location Mismatch Handling</h1><p>Physical qty and system qty are same, batch/lot is same, but physical location is different.</p></div><div class="actions"><button class="light" onclick="autoGenerateBlankData()">Auto Generate Data</button><button class="light" onclick="exportExcelDemo(\'Blank Count Analysis.xlsx\')">Export Analysis</button><button class="primary" onclick="openModal(\'Action Created\',\'Location correction task created.\',\'✅\')">Create Action</button></div></div><section class="grid2"><div class="card"><h3>Location Compare</h3><table><thead><tr><th>SKU</th><th>Batch/Lot</th><th>System Loc</th><th>Physical Loc</th><th>System Qty</th><th>Physical Qty</th><th>Status</th></tr></thead><tbody><tr><td><b>SKU-77120</b></td><td>LOT-2405-A</td><td>A1-01-01</td><td>B2-03-05</td><td>500 PCS</td><td>500 PCS</td><td><span class="pill warn">Location Mismatch</span></td></tr><tr><td><b>SKU-88420</b></td><td>LOT-2404-X</td><td>B1-02-03</td><td>STAGING-02</td><td>80 CTN</td><td>80 CTN</td><td><span class="pill warn">Moved Location</span></td></tr></tbody></table></div><div class="card"><h3>Auto Action Recommendation</h3><div class="status"><div class="status-row"><b>Quantity Status</b><span class="pill ok">Matched</span></div><div class="status-row"><b>Batch/Lot Status</b><span class="pill ok">Matched</span></div><div class="status-row"><b>Location Status</b><span class="pill warn">Mismatch</span></div><div class="status-row"><b>Suggested Action</b><span class="pill info">Location Correction</span></div></div></div></section>'}
+
+var pages = {
+    dashboard: dashboard,
+    variance: function(){return variancePage(currentSku)},
+    blank: blankPage,
+    stock: function(){return '<div class="head"><div><h1>Stock Count Execution</h1><p>Execute count tasks by location, SKU, PID and zone.</p></div></div><section class="grid2"><div class="card"><h3>Count Task List</h3><table><thead><tr><th>Location</th><th>SKU</th><th>Status</th><th>User</th></tr></thead><tbody><tr><td>A1-03-02</td><td>SKU-88120</td><td><span class="pill warn">In Progress</span></td><td>Alwi</td></tr><tr><td>B2-01-01</td><td>SKU-77120</td><td><span class="pill ok">Completed</span></td><td>Ira</td></tr><tr><td>A1-03-01</td><td>SKU-44220</td><td><span class="pill bad">Variance</span></td><td>James</td></tr></tbody></table></div><div class="card"><h3>Count Controls</h3><div class="status"><div class="status-row"><b>Duplicate Prevention</b><span class="pill ok">Enabled</span></div><div class="status-row"><b>UOM Validation</b><span class="pill info">Enabled</span></div></div></div></section>'},
+    discrepancy: function(){return '<div class="head"><div><h1>Discrepancy Management</h1><p>Click any SKU to open dynamic auto result validation.</p></div><div class="actions"><button class="light" onclick="exportExcelDemo(\'Variance Analysis Report.xlsx\')">Export Variance</button><button class="primary" onclick="openModal(\'Create Recount\',\'Recount task created.\',\'🔁\')">Create Recount</button></div></div><section class="grid2"><div class="card"><h3>Variance Queue</h3><div class="feed" style="margin-top:12px;max-height:none">'+['SKU-88120','SKU-55110','SKU-44220','SKU-99100','SKU-88210'].map(function(s){var d=varianceData[s];return '<div class="alert click" onclick="openVarianceSKU(\''+s+'\')"><div class="alert-icon red">⚠</div><div><b>'+s+'</b><p>'+esc(d.cause)+'</p></div><span class="pill warn">Review</span></div>'}).join('')+'<div class="alert click" onclick="openBlankCount()"><div class="alert-icon orange">📍</div><div><b>SKU-77120 Blank Count</b><p>Qty and batch/lot matched, location different.</p></div><span class="pill warn">Location</span></div></div></div><div class="card"><h3>Approval Workflow</h3><div class="status"><div class="status-row"><b>1. Variance Detected</b><span class="pill bad">Alert</span></div><div class="status-row"><b>2. Auto Result Validation</b><span class="pill info">Compare</span></div><div class="status-row"><b>3. Root Cause Analysis</b><span class="pill warn">Required</span></div><div class="status-row"><b>4. Adjustment Request</b><span class="pill info">ADJ-2026-00124</span></div><div class="status-row"><b>5. Supervisor Approval</b><span class="pill warn">Pending</span></div><div class="status-row"><b>6. Manager Approval (>20 KG)</b><span class="pill bad">Required</span></div><div class="status-row"><b>7. Inventory Posting</b><span class="pill info">Waiting</span></div><div class="status-row"><b>8. Case Closed</b><span class="pill ok">Final</span></div></div></div></section>'},
+    reports: function(){return '<div class="head"><div><h1>Reports & Analytics</h1><p>Generate reports for productivity, discrepancy trends and operational performance.</p></div><div class="actions"><button class="light" onclick="generatePDFReport()">Download PDF</button><button class="primary" onclick="generatePDFReport()">Generate Report</button></div></div><section class="modules"><div class="module click" onclick="openModule(\'discrepancy-trend\')"><div class="module-icon blue">📈</div><h4>Count Productivity</h4><p class="muted">Track completion by user and zone.</p></div><div class="module click" onclick="openModule(\'discrepancy-trend\')"><div class="module-icon green">📊</div><h4>Discrepancy Trend</h4><p class="muted">Variance patterns with analysis.</p></div><div class="module click" onclick="openModal(\'Audit Trail\',\'User activities and approvals logged.\',\'🧾\')"><div class="module-icon orange">🧾</div><h4>Audit Trail</h4><p class="muted">User activities and approvals.</p></div><div class="module click" onclick="openModal(\'Inventory Accuracy\',\'Reconciliation performance: 97.4% overall accuracy.\',\'📦\')"><div class="module-icon purple">📦</div><h4>Inventory Accuracy</h4><p class="muted">Reconciliation performance.</p></div></section>'},
+    master: function(){return '<div class="head"><div><h1>Master Data</h1><p>Maintain product master, base UOM, EAN, batch/lot and counting rules.</p></div></div><section class="grid2"><div class="card"><h3>Product Master Check</h3><table><thead><tr><th>SKU</th><th>Base UOM</th><th>EAN</th><th>Status</th></tr></thead><tbody><tr><td>SKU-88120</td><td>KG</td><td>8881000123456</td><td><span class="pill ok">Valid</span></td></tr><tr><td>SKU-77120</td><td>PCS</td><td>Missing</td><td><span class="pill bad">Need Update</span></td></tr></tbody></table></div><div class="card"><h3>Master Data Benefits</h3><div class="status"><div class="status-row"><b>UOM Conversion</b><span class="pill ok">Accuracy</span></div><div class="status-row"><b>Batch/Lot Traceability</b><span class="pill info">Control</span></div></div></div></section>'},
+    upload: uploadPage,
+    integration: function(){return '<div class="head"><div><h1>Integration Module</h1><p>Integration readiness with WX3 and SAP.</p></div></div><section class="modules"><div class="module"><div class="module-icon blue">🏗</div><h4>System Integration</h4><p class="muted">Auto-sync with WX3</p></div><div class="module"><div class="module-icon green">🤖</div><h4>Automation</h4><p class="muted">Robotics integration</p></div><div class="module"><div class="module-icon orange">🔗</div><h4>WX3 / SAP</h4><p class="muted">Inventory movement integration</p></div><div class="module"><div class="module-icon purple">📶</div><h4>Offline Sync</h4><p class="muted">Sync after internet returns</p></div></div>'},
+    users: function(){return '<div class="head"><div><h1>User Management</h1><p>Role-based access for counter, checker, supervisor and admin.</p></div></div><section class="grid2"><div class="card"><h3>Role Access Demo</h3><div class="status"><div class="status-row"><b>Counter</b><span class="pill info">Submit Count</span></div><div class="status-row"><b>Supervisor</b><span class="pill warn">Create Adjustment</span></div><div class="status-row"><b>Manager</b><span class="pill ok">Approve Adjustment</span></div></div></div></section>'},
+    settings: function(){return '<div class="head"><div><h1>System Settings</h1><p>Configure tolerance, UOM, offline sync and approval rules.</p></div></div><section class="modules"><div class="module"><div class="module-icon red">📏</div><h4>Variance Tolerance</h4><p class="muted">Set acceptable variance.</p></div><div class="module"><div class="module-icon blue">🔔</div><h4>Notification Rule</h4><p class="muted">Configure alerts.</p></div><div class="module"><div class="module-icon green">📶</div><h4>Offline Sync Rule</h4><p class="muted">Auto-sync interval.</p></div><div class="module"><div class="module-icon orange">✅</div><h4>Approval Matrix</h4><p class="muted">Supervisor approvals.</p></div></div>'},
+    adjustment: adjustmentPage,
+    'discrepancy-trend': discrepancyTrendPage
+};
+
+function showToast(msg){ var t=document.createElement('div'); t.className='toast'; t.innerHTML=msg; document.body.appendChild(t); setTimeout(function(){t.remove();},1500); }
+
+var envProject='', envHub='', envWarehouse='';
+var mobileCountType='', mobileRequest='';
+var mobileCountVer='VER-001'; // Default VER-001
+
+function environmentWizard(){
+ if(!envProject){ return '<div class="phone-card"><h3>🚀 Select Project</h3><button class="submit" onclick="envProject=\'CHEMSG\';refreshMobile()">CHEMSG</button><button class="submit" onclick="envProject=\'FMCG\';refreshMobile()">FMCG</button><button class="submit" onclick="envProject=\'PHARMA\';refreshMobile()">PHARMA</button></div>'; }
+ if(!envHub){ return '<div class="phone-card"><small>Project: '+envProject+'</small><h3>🏭 Select Hub</h3><button class="submit" onclick="envHub=\'SYMRISE\';refreshMobile()">SYMRISE</button><button class="submit" onclick="envHub=\'CENTRAL HUB\';refreshMobile()">CENTRAL HUB</button><button class="submit" onclick="envHub=\'NORTH HUB\';refreshMobile()">NORTH HUB</button></div>'; }
+ if(!envWarehouse){ return '<div class="phone-card"><small>'+envProject+' › '+envHub+'</small><h3>📦 Select Warehouse</h3><button class="submit" onclick="envWarehouse=\'CHEMPARK\';enterMobileDashboard()">CHEMPARK</button><button class="submit" onclick="envWarehouse=\'WH-A\';enterMobileDashboard()">WH-A</button><button class="submit" onclick="envWarehouse=\'WH-B\';enterMobileDashboard()">WH-B</button></div>'; }
+ return '';
+}
+function refreshMobile(){document.getElementById('mobile').innerHTML=mobilePage();}
+function enterMobileDashboard(){showToast('✅ Environment Loaded');setTimeout(function(){document.getElementById('mobile').innerHTML=mobilePage();},800);}
+
+var mobileMenuReady=false;
+function mobileMainMenu(){
+return '<div class="phone-card"><b>Project:</b> '+envProject+'<br><b>Hub:</b> '+envHub+'<br><b>Warehouse:</b> '+envWarehouse+'</div><div class="phone-card"><h3>Main Menu</h3><div class="phone-card"><b>▼ Inventory</b><div style="margin-top:10px"><button class="submit" onclick="mobileMenuReady=true;document.getElementById(\'mobile\').innerHTML=mobilePage()">Y-COUNT</button></div></div><div class="phone-card"><b>▼ Inbound</b></div><div class="phone-card"><b>▼ Outbound</b></div><button class="submit" style="background:#667085" onclick="mobileLogout()">Logout</button></div>';
+}
+
+var mobileLoggedIn=false;
+var mobileUser='';
+
+function mobileLoginPage(){return '<div class="head"><div><h1>Mobile Login</h1><p>Secure warehouse access for counting operations.</p></div></div><section class="phone-stage"><div class="card"><h3>Y-COUNT Mobile Access</h3><p class="muted">Login before accessing mobile counting features.</p><div class="status" style="margin-top:12px"><div class="status-row"><b>Offline Ready</b><span class="pill ok">Enabled</span></div><div class="status-row"><b>Inventory Accuracy</b><span class="pill info">97.4%</span></div></div></div><div class="phone"><div class="screen"><div class="phone-top"><b>Y-COUNT</b><span>📦</span></div><div class="phone-body"><div class="phone-card" style="text-align:center"><div style="font-size:54px">🔐</div><h3>Mobile Login</h3><p class="muted">Warehouse Stock Count System</p></div><div class="input-demo"><small>Employee ID</small><input id="mobileUserInput" placeholder="counter01" style="width:100%;border:0;background:none"></div><div class="input-demo"><small>Password</small><input id="mobilePassInput" type="password" placeholder="demo123" style="width:100%;border:0;background:none"></div><div class="phone-card"><small>Demo Account</small><br><b>User:</b> demo<br><b>Password:</b> demo123</div><button class="submit" onclick="mobileLogin()">Login</button></div></div></div></section>'}
+function mobileLogin(){
+var u=document.getElementById('mobileUserInput').value.trim();
+var p=document.getElementById('mobilePassInput').value.trim();
+if(u==='demo' && p==='demo123'){ mobileLoggedIn=true; mobileUser=u; showToast('✅ Login Successful<br>Welcome Back, Demo User'); setTimeout(function(){document.getElementById('mobile').innerHTML=mobilePage();},1500); } else { openModal('Login Failed','Use demo123 password and a demo user.','⚠️'); }
+}
+function selectCountType(val){mobileCountType=val;refreshMobile();showToast('✅ Count Type: '+val)}
+function startCounting(){
+ if(!mobileCountType){
+   openModal('Incomplete','Please select COUNT TYPE. (COUNT VER auto-set to VER-001)','⚠️');
+   return;
+ }
+ // Auto set count ver
+ mobileCountVer = 'VER-001';
+ openModal('✅ Count Started','Count Type: '+mobileCountType+'<br>Count Ver: '+mobileCountVer+' (Auto)<br><br>Counting session started successfully!','📋');
+ refreshMobile();
+}
+
+function mobilePage(){
+if(!mobileLoggedIn){return mobileLoginPage()}
+var content='';
+if(!envWarehouse){ content=environmentWizard(); }
+else if(!mobileMenuReady){ content=mobileMainMenu(); }
+else{
+  if(!mobileCountType){
+    var orderButtons = '';
+    if (countingOrders.length > 0) {
+      orderButtons = '<div style="margin-bottom:12px"><small style="color:var(--muted);font-weight:800">📋 Load from Order</small>' +
+        countingOrders.map(function(o) {
+          var headerCount = o.headers ? o.headers.length : 0;
+          return '<div class="count-type-btn" onclick="loadOrderToMobile(\'' + o.id + '\')">📋 ' + o.id + ' - ' + o.project + ' › ' + o.warehouse + '<br><small style="font-weight:400">' + headerCount + ' headers selected</small></div>';
+        }).join('') +
+        '<hr style="margin:12px 0;border-color:var(--line)"></div>';
+    }
+    content='<div class="phone-card"><h3 style="margin-bottom:12px">📋 Select Count Parameters</h3>'+orderButtons+
+      '<div style="margin-bottom:12px"><small style="color:var(--muted);font-weight:800">COUNT TYPE *</small>'+
+      '<div class="count-type-btn'+(mobileCountType==='PHYSICAL INVENTORY'?' selected':'')+'" onclick="selectCountType(\'PHYSICAL INVENTORY\')">📦 PHYSICAL INVENTORY</div>'+
+      '<div class="count-type-btn'+(mobileCountType==='CYCLE COUNT'?' selected':'')+'" onclick="selectCountType(\'CYCLE COUNT\')">🔄 CYCLE COUNT</div>'+
+      '<div class="count-type-btn'+(mobileCountType==='BLANK COUNT'?' selected':'')+'" onclick="selectCountType(\'BLANK COUNT\')">📄 BLANK COUNT</div></div>'+
+      '<div style="margin-bottom:12px;background:var(--soft-green);border-radius:12px;padding:8px 12px;font-size:12px;text-align:center;border:1px solid var(--green)">'+
+      '✅ COUNT VER: <b>VER-001</b> (Auto-generated)</div>'+
+      '<button class="submit" style="margin-top:16px" onclick="startCounting()">▶ Start Counting</button>'+
+      '<button class="submit" style="margin-top:8px;background:#667085" onclick="mobileMenuReady=false;refreshMobile()">◀ Back to Menu</button></div>';
+  }else{
+    var orderInfo = countingOrders.find(function(o) { return o.countType === mobileCountType; });
+    var orderLabel = orderInfo ? '📋 ' + orderInfo.id : '';
+    content='<div id="phoneBody" class="phone-body"></div><div class="phone-card" style="background:var(--soft-blue);border-color:var(--blue)"><small style="color:var(--muted)">Active Count Session</small><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px;flex-wrap:wrap"><span><b>Type:</b> '+mobileCountType+'</span><span><b>Ver:</b> VER-001</span>'+(orderLabel ? '<span><b>Order:</b> '+orderLabel+'</span>' : '')+'</div><button class="submit" style="margin-top:8px;padding:8px;font-size:12px" onclick="mobileCountType=\'\';refreshMobile()">🔄 Change Selection</button></div>';
+    setTimeout(function(){openPhone('dashboard')},100);
+  }
+}
+return '<div class="head"><div><h1>📱 Mobile Counting</h1><p>Warehouse counting with offline support</p></div></div><section class="phone-stage"><div class="card"><h3>🔗 Connected Environment</h3><div class="status" style="margin-top:12px"><div class="status-row"><b>Project</b><span>'+(envProject||'-')+'</span></div><div class="status-row"><b>Hub</b><span>'+(envHub||'-')+'</span></div><div class="status-row"><b>Warehouse</b><span>'+(envWarehouse||'-')+'</span></div><div class="status-row"><b>Orders</b><span>'+countingOrders.length+' created</span></div></div><button class="light" onclick="viewAllOrders()" style="margin-top:12px;width:100%">📋 View All Orders</button></div><div class="phone"><div class="screen"><div class="phone-top"><b>☰ Y-COUNT</b><span>🔔 3</span></div>'+content+'<div class="phone-nav"><div onclick="openPhone(\'dashboard\')">⌂<br>Dashboard</div><div onclick="openPhone(\'count\')">📋<br>Count</div><div onclick="openPhone(\'blank\')">📍<br>Blank</div><div onclick="openPhone(\'more\')">⋯<br>More</div></div></div></div></section>';
+}
+
+function openPhone(name){var el=document.getElementById('phoneBody');if(!el)return;var screens={dashboard:'<div class="phone-card" style="background:linear-gradient(135deg,#07192f,#155eef);color:white;border:0"><div style="display:flex;justify-content:space-between;align-items:center"><div><small style="opacity:.75">Today Progress</small><h2 style="margin-top:4px">75%</h2><p style="opacity:.78;font-size:12px">96 of 128 count jobs completed</p></div><div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#12b76a 0 75%,rgba(255,255,255,.25) 75%);display:grid;place-items:center"><div style="width:58px;height:58px;border-radius:50%;background:#07192f;display:grid;place-items:center;font-weight:900">75%</div></div></div></div><div class="mobile-kpis"><div class="mobile-kpi"><small>Tasks</small><b>128</b></div><div class="mobile-kpi"><small>Done</small><b style="color:var(--green)">96</b></div><div class="mobile-kpi"><small>Blank</small><b style="color:var(--orange)">3</b></div><div class="mobile-kpi"><small>Damage</small><b style="color:var(--red)">6</b></div><div class="mobile-kpi"><small>Pending QC</small><b style="color:var(--blue)">2</b></div></div><div class="phone-card"><h4>Quick Actions</h4><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px"><div onclick="openPhone(\'scan\')" style="text-align:center;font-size:11px;font-weight:800"><div class="blue" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">▦</div>Scan</div><div onclick="openPhone(\'count\')" style="text-align:center;font-size:11px;font-weight:800"><div class="green" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">✓</div>Count</div><div onclick="openPhone(\'offline\')" style="text-align:center;font-size:11px;font-weight:800"><div class="purple" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">☁</div>Sync</div><div onclick="openPhone(\'blank\')" style="text-align:center;font-size:11px;font-weight:800"><div class="orange" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">📍</div>Blank</div><div onclick="openPhone(\'reports\')" style="text-align:center;font-size:11px;font-weight:800"><div class="red" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">📷</div>Reports</div></div></div><div class="phone-card"><h4>Live Mobile Activity</h4><div class="status" style="margin-top:10px"><div class="status-row"><b>WH-01-A-12</b><span class="pill warn">Counting</span></div><div class="status-row"><b>Offline Queue</b><span class="pill info">2 Pending</span></div><div class="status-row"><b>Next Location</b><span class="pill ok">Ready</span></div></div></div>',count:'<div class="phone-card"><h4>📦 Count Entry + Quality Inspection</h4><div class="phone-card" style="background:#f8fbff"><b>SKU-88120</b><br><small>BATCH-B240520 • WH-01-A-12</small></div><div class="input-demo"><small>⚖ Physical Qty</small><div style="font-size:28px;font-weight:900">1,520 KG</div><span class="pill ok">Converted from 1.52 Ton</span></div><div class="input-demo"><small>Quality Inspection</small><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"><span class="pill ok">✓ Good</span><span class="pill bad">⚠ Damaged</span><span class="pill warn">⌛ Expired</span><span class="pill info">💧 Leaking</span><span class="pill-purple pill">📦 Broken Packaging</span></div></div><div class="input-demo"><small>Damage Qty</small><div style="display:flex;justify-content:space-between;font-weight:900"><span>➖</span><span>20 KG</span><span>➕</span></div></div><div class="input-demo"><small>Severity</small><div style="display:flex;gap:10px"><span class="pill">Minor</span><span class="pill warn">Major</span><span class="pill bad">Critical</span></div></div><div class="input-demo"><small>Evidence Photo</small><div style="padding:12px;border:1px dashed #ccc;border-radius:12px;text-align:center">📷 Capture Damage Evidence<br><small>IMG_2026_001.jpg ✓ Uploaded</small></div></div><div class="input-demo"><small>Remarks</small><b>Packaging torn during counting</b><div style="text-align:right;color:#667085">31/200</div></div><button class="submit" onclick="openPhone(\'submit\')">✓ Submit Count</button><button class="submit" style="background:linear-gradient(135deg,var(--purple),var(--cyan))" onclick="openPhone(\'offline\')">☁ Save Offline</button><button class="submit" style="background:white;color:var(--blue);border:1px solid var(--line)" onclick="openPhone(\'continue\')">→ Next Location</button></div>',blank:'<div class="phone-card"><h4>Blank Count Entry</h4><div class="input-demo"><small>Product Code</small><b>SKU-77120</b></div><div class="input-demo"><small>Batch / Lot No</small><b>LOT-2405-A</b></div><div class="input-demo"><small>Physical Location</small><b>B2-03-05</b></div><div class="input-demo"><small>Physical Actual Qty</small><b>500 PCS</b></div><button class="submit" onclick="openPhone(\'blankResult\')">Validate Blank Count</button></div>',blankResult:'<div class="phone-card" style="text-align:center"><div style="font-size:50px">📍</div><h3>Location Mismatch Detected</h3><p class="muted">Qty and batch/lot matched, but location different.</p><button class="submit" onclick="openPhone(\'blankAction\')">Generate Action</button><button class="submit" onclick="openPhone(\'blankReport\')">View Report</button></div>',blankAction:'<div class="phone-card" style="text-align:center"><div style="font-size:50px;color:var(--green)">✓</div><h3>Action Created</h3><p class="muted">Location correction task created.</p><button class="submit" onclick="openPhone(\'dashboard\')">Back Dashboard</button></div>',blankReport:'<div class="phone-card"><h4>Blank Count Report</h4><div class="status"><div class="status-row"><b>Total Issues</b><span class="pill warn">3</span></div><div class="status-row"><b>Qty Variance</b><span class="pill ok">0</span></div></div><button class="submit" onclick="openPhone(\'blankAction\')">Create Action</button></div>',scan:'<div class="phone-card"><h4>Scan Item</h4><div class="scan-box">▦<br>Scanning barcode...</div><button class="submit" onclick="openPhone(\'count\')">Use Item</button></div>',submit:'<div class="phone-card" style="text-align:center;padding:24px"><div style="width:86px;height:86px;border-radius:50%;background:var(--soft-green);display:grid;place-items:center;margin:0 auto 16px;font-size:46px;color:var(--green)">✓</div><h3>Count Submitted</h3><p class="muted" style="margin-top:8px">Count result recorded with audit trail.</p><button class="submit" onclick="openPhone(\'offline\')">☁ Save / Sync Mode</button><button class="submit" style="background:white;color:var(--blue);border:1px solid var(--line)" onclick="openPhone(\'continue\')">→ Continue to Next Location</button></div>',offline:'<div class="phone-card"><h3>Offline Queue Active</h3><div class="status"><div class="status-row"><b>WH-01-A-12</b><span class="pill warn">Pending Sync</span></div><div class="status-row"><b>WH-02-C-01</b><span class="pill warn">Pending Sync</span></div></div><button class="submit" onclick="openPhone(\'sync\')">Sync Now</button><button class="submit" onclick="openPhone(\'continue\')">Continue Count</button></div>',sync:'<div class="phone-card"><h3>Sync Completed</h3><button class="submit" onclick="openPhone(\'dashboard\')">Back Dashboard</button></div>',continue:'<div class="phone-card"><h3>Continue Count</h3><div class="status"><div class="status-row"><b>WH-02-C-01</b><span class="pill warn">Next</span></div><div class="status-row"><b>WH-01-A-12</b><span class="pill ok">Ready</span></div></div><button class="submit" onclick="openPhone(\'count\')">Continue Counting</button></div>',more:'<div class="phone-card"><h4>More Menu</h4><button class="submit" onclick="openPhone(\'profile\')">Profile</button><button class="submit" onclick="openPhone(\'guide\')">User Guide</button><button class="submit" onclick="openPhone(\'support\')">Help & Support</button><button class="submit" onclick="mobileLogout()">Logout</button></div>',profile:'<div class="phone-card"><h4>Profile</h4><p>edurise • Group 3</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>',guide:'<div class="phone-card"><h4>User Guide</h4><p>Scan → Count → Validate → Submit.</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>',reports:'<div class="phone-card"><h4>My Reports</h4><div class="status"><div class="status-row"><b>CNT-240601-001</b><span class="pill ok">Completed</span></div><div class="status-row"><b>DR-240601-001</b><span class="pill warn">Pending QC</span></div><div class="status-row"><b>DR-240601-002</b><span class="pill ok">Approved</span></div></div><button class="submit" onclick="openPhone(\'reportDetail\')">View Latest Report</button></div>',reportDetail:'<div class="phone-card"><h4>Damage Report Detail</h4><div class="input-demo"><small>Report ID</small><b>DR-240601-001</b></div><div class="input-demo"><small>Category</small><b>Broken Packaging</b></div><div class="input-demo"><small>Damage Qty</small><b>20 KG</b></div><div class="input-demo"><small>Severity</small><b>Major</b></div><div class="input-demo"><small>Evidence</small><b>📷 1 Photo Attached</b></div><div class="input-demo"><small>Status</small><b>Pending QC Review</b></div><button class="submit" onclick="openPhone(\'reports\')">Back</button></div>',support:'<div class="phone-card"><h4>Help & Support</h4><p>Access, connectivity and data issue support.</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>'};el.innerHTML=screens[name]||screens.dashboard}
+
+function teamPage(){return '<section class="team-head"><h1>Group 3 Project Team</h1><p>Y-COUNT Enhancement Project Team • Management Trainees</p></section><section class="team-grid"><div class="profile click" onclick="openTeamProfile(\'Nur Adlina Binti Adnan (Alin)\',\'MY Malaysia\',\'A\',\'Focus on stock count workflow, user journey and operation validation.\')"><div class="cover"></div><div class="profile-photo">A</div><div class="profile-body"><h3>Nur Adlina Binti Adnan<br>(Alin)</h3><p>MY Malaysia</p><span class="pill ok">Management Trainee</span></div></div><div class="profile click" onclick="openTeamProfile(\'Nursyahirah Binti Aziz (Ira)\',\'MY Malaysia\',\'I\',\'Supports upload, report, discrepancy review and process alignment.\')"><div class="cover"></div><div class="profile-photo">I</div><div class="profile-body"><h3>Nursyahirah Binti Aziz<br>(Ira)</h3><p>MY Malaysia</p><span class="pill ok">Management Trainee</span></div></div><div class="profile click" onclick="openTeamProfile(\'Ahmad Alwi (Alwi)\',\'ID Indonesia\',\'A\',\'Supports demo application, mobile flow, offline sync and dashboard design.\')"><div class="cover"></div><div class="profile-photo">A</div><div class="profile-body"><h3>Ahmad Alwi<br>(Alwi)</h3><p>ID Indonesia</p><span class="pill ok">Management Trainee</span></div></div><div class="profile click" onclick="openTeamProfile(\'James Timothy C. Natividad (James)\',\'PH Philippines\',\'J\',\'Supports validation logic, variance handling and capstone presentation flow.\')"><div class="cover"></div><div class="profile-photo">J</div><div class="profile-body"><h3>James Timothy C. Natividad<br>(James)</h3><p>PH Philippines</p><span class="pill ok">Management Trainee</span></div></div></section>'}
+function openTeamProfile(name,country,initial,desc){openModal(name,country+' • Management Trainee\n\n'+desc,initial,[['Team','Group 3','info'],['Project','Y-Count Enhancement','ok'],['Role','Management Trainee','warn']])}
+function render(name){var fn=pages[name]||pages.dashboard;document.getElementById('desktop').innerHTML=fn(); 
+    setTimeout(function() {
+        renderSortableHeaders();
+        updateSamplePreview();
+        if (name === 'upload') {
+            document.querySelectorAll('.upload-tab').forEach(function(btn){btn.classList.remove('active');});
+            var tabs = document.querySelectorAll('.upload-tab');
+            if (currentUploadTab === 'template') {
+                tabs[0].classList.add('active');
+                document.getElementById('uploadTemplateContent').classList.remove('hidden');
+                document.getElementById('uploadOrderContent').classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('uploadTemplateContent').classList.add('hidden');
+                document.getElementById('uploadOrderContent').classList.remove('hidden');
+                setTimeout(function(){ renderOrderHeaderSelection(); updateOrderPreview(); }, 100);
+            }
+        }
+    }, 100);
+}
+function openModule(name,el){showView('desktop');render(name);document.querySelectorAll('.menu-row').forEach(function(m){m.classList.remove('active')});if(el)el.classList.add('active')}
+function openVarianceSKU(sku){currentSku=sku;openModal('Loading Variance Analysis','Opening validation details for '+sku+'...','🔍');setTimeout(function(){showView('desktop');document.getElementById('desktop').innerHTML=variancePage(sku)},250)}
+function openVarianceReconcile(){document.getElementById('desktop').innerHTML=variancePage(currentSku);showView('desktop')}
+function openBlankCount(){document.getElementById('desktop').innerHTML=blankPage();showView('desktop')}
+function autoGenerateBlankData(){openModal('Auto Generate Completed','Blank count/location mismatch records generated.','⚙️')}
+function openModal(title,text,icon,rows){document.getElementById('modal').style.display='flex';document.getElementById('modalIcon').innerHTML=icon||'✓';document.getElementById('modalTitle').innerText=title;document.getElementById('modalText').innerText=text;var data=rows||[['Status','Active','ok'],['Audit Trail','Recorded','info'],['Next Action','Review','warn']];document.getElementById('modalRows').innerHTML=data.map(function(r){return '<div class="status-row"><b>'+esc(r[0])+'</b><span class="pill '+r[2]+'">'+esc(r[1])+'</span></div>'}).join('');var closeBtn=document.querySelector('.modal-card .submit');closeBtn.textContent='Close';closeBtn.onclick=function(){closeModal()};}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
+function applyRoleAccess(){
+ document.querySelectorAll('.menu-row').forEach(function(m){m.style.display='flex';});
+ if(currentRole==='Counter'){
+   document.querySelectorAll('.menu-row').forEach(function(m){
+      if(m.innerText.includes('Reports')||m.innerText.includes('User Management')||m.innerText.includes('Settings')||m.innerText.includes('Integration')||m.innerText.includes('Adjustment')){
+         m.style.display='none';
+      }
+   });
+   showView('mobile');
+ }
+ if(currentRole==='Supervisor'){
+   document.querySelectorAll('.menu-row').forEach(function(m){
+      if(m.innerText.includes('User Management')||m.innerText.includes('Settings')){
+         m.style.display='none';
+      }
+   });
+ }
+ updateAdjBadge();
+ updateOrderBadge();
+}
+
+function login(){
+ var u=document.getElementById('username').value.trim().toLowerCase();
+ var p=document.getElementById('password').value.trim();
+ var role='';
+ if(u==='manager01' && p==='manager123'){role='Manager';currentUser='manager01';}
+ else if(u==='supervisor01' && p==='supervisor123'){role='Supervisor';currentUser='supervisor01';}
+ else if(u==='counter01' && p==='counter123'){role='Counter';currentUser='counter01';}
+ else if(u==='edurise' && p.toLowerCase()==='grup3'){role='Manager';currentUser='edurise';}
+ if(role){ currentRole=role;
+   document.getElementById('login').classList.add('hidden');
+   document.getElementById('app').classList.remove('hidden');
+   var userBox=document.getElementById('userNameDisplay');
+   var roleBox=document.getElementById('userRoleDisplay');
+   if(userBox) userBox.innerText=u;
+   if(roleBox) roleBox.innerText=role;
+   if(role==='Counter'){
+      document.querySelectorAll('.menu-row').forEach(function(m){
+        if(m.innerText.includes('User Management') || m.innerText.includes('Settings') || m.innerText.includes('Adjustment')) m.style.display='none';
+      });
+   }
+   if(role==='Supervisor'){
+      document.querySelectorAll('.menu-row').forEach(function(m){
+        if(m.innerText.includes('User Management') || m.innerText.includes('Settings')) m.style.display='none';
+      });
+   }
+   loadOrdersFromStorage();
+   applyRoleAccess(); render('dashboard');
+ }else{ openModal('Login Failed','Use demo role accounts.','⚠️'); }
+}
+function logout(){document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden')}
+function showView(view){['desktop','mobile','team'].forEach(function(v){document.getElementById(v).classList.add('hidden');document.getElementById(v+'Tab').classList.remove('active')});document.getElementById(view).classList.remove('hidden');document.getElementById(view+'Tab').classList.add('active');if(view==='mobile'){document.getElementById('mobile').innerHTML=mobilePage();setTimeout(function(){openPhone('dashboard')},0)}if(view==='team'){document.getElementById('team').innerHTML=teamPage()}}
+function toggleUserDropdown(){var d=document.getElementById('userDropdown');if(d)d.classList.toggle('hidden')}
+function triggerUpload(){var input=document.getElementById('uploadInput')||document.getElementById('globalUploadInput');if(input)input.click();else{openModule('upload');setTimeout(function(){var i=document.getElementById('uploadInput')||document.getElementById('globalUploadInput');if(i)i.click()},100)}}
+function downloadUploadTemplate(){downloadCustomTemplate();}
+function handleUpload(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(evt){var rows=parseUploadedText(evt.target.result||'',f.name);if(!rows||rows.length<2){showUploadError(f.name,'Unable to read this format. Save as CSV or Excel-readable XLS.');e.target.value='';return}showUploadPreview(rows,f.name);openModal('Excel Uploaded',f.name+' uploaded successfully. Actual data transferred to UI preview.','📥',[['File Name',f.name,'info'],['Rows Read',String(rows.length-1),'ok'],['Transfer to UI','Completed','ok']]);e.target.value=''};reader.onerror=function(){showUploadError(f.name,'File cannot be read.');e.target.value=''};reader.readAsText(f)}
+function parseUploadedText(text,fileName){var lower=(fileName||'').toLowerCase();if(lower.endsWith('.xlsx')){showUploadError(fileName,'Modern .xlsx is not supported in this browser demo. Save as CSV or Excel 97-2003 XLS.');return null}if(lower.endsWith('.csv'))return parseCSV(text);if(lower.endsWith('.xls')||text.indexOf('<table')>-1){try{var doc=new DOMParser().parseFromString(text,'text/html');var trs=[].slice.call(doc.querySelectorAll('tr'));if(trs.length)return trs.map(function(tr){return [].slice.call(tr.querySelectorAll('td,th')).map(function(td){return (td.textContent||'').trim()})})}catch(err){console.error(err)}}return parseCSV(text)}
+function normalizeHeader(h){return String(h||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+function findHeaderIndex(header,keys){for(var i=0;i<header.length;i++){var h=normalizeHeader(header[i]);for(var k=0;k<keys.length;k++){if(h.indexOf(keys[k])>-1)return i}}return -1}
+function parseCSV(text){return String(text||'').split(/\r?\n/).filter(function(line){return line.trim()!==''}).map(function(line){var out=[],cur='',quote=false;for(var i=0;i<line.length;i++){var ch=line[i];if(ch==='"')quote=!quote;else if(ch===','&&!quote){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out})}
+function showUploadPreview(rows,fileName){openModule('upload');setTimeout(function(){var box=document.getElementById('uploadPreview'),body=document.getElementById('uploadPreviewRows');if(!box||!body)return;box.classList.remove('hidden');var header=rows[0]||[];var data=rows.slice(1);var seen={};body.innerHTML=data.map(function(r,idx){var sku=r[0]||'-',batch=r[1]||'-',loc=r[2]||'-',qty=r[3]||'-';var key=sku+' | '+batch+' | '+loc;var duplicate=seen[key]===true;seen[key]=true;var status=(sku==='-'||loc==='-'||qty.indexOf('-')>-1)?'<span class="pill bad">Validation Error</span>':(duplicate?'<span class="pill bad">Duplicate Same SKU/Batch/Location</span>':'<span class="pill ok">Accepted</span>');var cells=header.map(function(h,ci){return '<td>'+esc(r[ci]||'')+'</td>'}).join('');return '<tr><td>'+(idx+1)+'</td>'+cells+'<td>'+status+'</td></tr>'}).join('')},100)}
+function showUploadError(fileName,msg){openModule('upload');setTimeout(function(){var box=document.getElementById('uploadPreview'),body=document.getElementById('uploadPreviewRows');if(box)box.classList.remove('hidden');if(body)body.innerHTML='<tr><td colspan="7"><b style="color:var(--red)">Upload Error:</b> '+esc(msg)+'<br><br><b>File:</b> '+esc(fileName)+'</td></tr>'},100);openModal('Upload Error',msg,'⚠️',[['File',fileName,'warn'],['Status','Cannot Parse','bad'],['Action','Download Template','info']])}
+function downloadExcel(rows,name){var html='<html><head><meta charset="UTF-8"></head><body><table border="1">'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+esc(c)+'</td>'}).join('')+'</tr>'}).join('')+'</table></body></html>';var blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href)},1000)}
+function exportExcelDemo(name){var blank=name.toLowerCase().indexOf('blank')>-1;var rows;if(blank){rows=[['Report','Blank Count / Product Location Mismatch'],['Generated',new Date().toLocaleString()],[],['SKU','Batch/Lot','System Location','Physical Location','System Qty','Physical Qty','Status','Action'],['SKU-77120','LOT-2405-A','A1-01-01','B2-03-05','500 PCS','500 PCS','Location Mismatch','Location Correction']]}else{var d=varianceData[currentSku]||varianceData['SKU-88120'];rows=[['Report','Variance Auto Result Validation'],['Generated',new Date().toLocaleString()],['SKU',currentSku],['Batch / Lot',d.batch],['Location',d.loc],[],['Opening Balance',d.opening],['Total Inbound',d.totalIn],['Total Outbound',d.totalOut],['Expected SOH',d.expected],['Physical Count',d.qtyPhy],['Variance',d.varQty],['Root Cause',d.cause],[],['Realtime Inventory Accuracy Monitoring',''],['Inventory Accuracy','97.4%'],['Count Accuracy','94.8%'],['Location Accuracy','91.2%'],['SKU Accuracy','97%'],['Batch/Lot Accuracy','95%'],['UOM Accuracy','98%'],[],['FLOW','DOCUMENT TYPE','REFERENCE','DOC DATE','POSTING TIME','PIC / USER','SOURCE SYSTEM','QTY IMPACT','RUNNING SOH','STATUS']].concat(d.tx)}downloadExcel(rows,name.replace(/\.xlsx$/i,'.xls'));openModal('Export Analysis',name+' downloaded successfully.','📊',[['Format','Excel-readable .xls','ok'],['Status','Downloaded','info']])}
+function generatePDFReport(){var w=window.open('','_blank');if(!w){openModal('Popup Blocked','Allow popups to generate report.','⚠️');return}var html='<!DOCTYPE html><html><head><title>Y-COUNT Report</title><style>body{font-family:Segoe UI,Arial;padding:28px;color:#101828}h1{color:#155eef}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.card{border:1px solid #d0d5dd;border-radius:14px;padding:14px}.big{font-size:30px;font-weight:900}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border:1px solid #d0d5dd;padding:8px;font-size:12px;text-align:left}th{background:#eff8ff}@media print{button{display:none}}</style></head><body><button onclick="window.print()" style="padding:12px 18px;border:0;border-radius:10px;background:#155eef;color:white;font-weight:800">Download / Save as PDF</button><button onclick="window.close()" style="padding:12px 18px;border:1px solid #d0d5dd;border-radius:10px;background:white;color:#155eef;font-weight:800;margin-left:10px">Back to Dashboard</button><h1>Y-COUNT Enhancement Dashboard Report</h1><p>Generated by edurise • '+new Date().toLocaleString()+'</p><div class="grid"><div class="card"><b>Total Jobs</b><div class="big">128</div></div><div class="card"><b>Completed</b><div class="big">96</div></div><div class="card"><b>Discrepancy</b><div class="big">9</div></div><div class="card"><b>Blank Count</b><div class="big">3</div></div></div><h2>Realtime Inventory Accuracy Monitoring</h2><div class="grid"><div class="card"><b>Inventory Accuracy</b><div class="big">97.4%</div></div><div class="card"><b>Count Accuracy</b><div class="big">94.8%</div></div><div class="card"><b>Location Accuracy</b><div class="big">91.2%</div></div><div class="card"><b>Qty Accuracy</b><div class="big">98%</div></div></div><h2>Analysis Summary</h2><table><tr><th>SKU</th><th>Batch/Lot</th><th>System Qty</th><th>Physical Qty</th><th>Variance</th><th>Root Cause</th><th>Action</th></tr><tr><td>SKU-88120</td><td>BATCH-B240520</td><td>1,550 KG</td><td>1,520 KG</td><td>-30 KG</td><td>Outbound during active count</td><td>Recount + Verify OB</td></tr><tr><td>SKU-77120</td><td>LOT-2405-A</td><td>500 PCS</td><td>500 PCS</td><td>0</td><td>Location mismatch</td><td>Location correction</td></tr></table></body></html>';w.document.open();w.document.write(html);w.document.close();openModal('Generate Report','PDF report opened in a new tab. Click Download / Save as PDF.','📄')}
+document.addEventListener('click',function(e){var target=e.target.closest('.module,.status-row,.bar-line,.legend-row,.kpi,.card.click,.improve,.quick-item');if(!target||target.closest('.modal')||target.closest('.phone'))return;if(target.getAttribute('onclick'))return;var label=target.querySelector('h1,h2,h3,h4,b,small');openModal(label?label.innerText:'Y-Count Function','This function is active. It opens demo workflow, validation, report, audit trail and next action.','🔎')});
+document.addEventListener('DOMContentLoaded',function(){applyRoleAccess(); render('dashboard');document.getElementById('mobile').innerHTML=mobilePage();document.getElementById('team').innerHTML=teamPage();loadOrdersFromStorage();});
+</script>
+</body>
+</html>
+<script>function mobileLogout(){mobileLoggedIn=false;mobileUser='';envProject='';envHub='';envWarehouse='';mobileMenuReady=false;mobileCountType='';mobileCountVer='VER-001';document.getElementById('mobile').innerHTML=mobilePage();}
+</script>
