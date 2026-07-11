@@ -42,12 +42,12 @@
 .template-header-item .header-index{color:var(--muted);font-size:11px;margin-right:10px;min-width:20px}
 .header-sortable-list{display:flex;flex-direction:column;gap:4px;padding:4px 0;min-height:60px}
 
-.create-order .field label{font-size:13px;font-weight:800;color:var(--ink);display:block;margin-bottom:6px}
-.create-order .card{transition:all 0.3s ease}
-.create-order .card:hover{box-shadow:0 8px 30px rgba(16,24,40,0.08)}
-#orderPreview div{padding:8px 12px;background:white;border-radius:10px;border:1px solid var(--line)}
-#orderPreview div b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
-#orderPreview div span{font-size:14px;font-weight:700}
+.create-request .field label{font-size:13px;font-weight:800;color:var(--ink);display:block;margin-bottom:6px}
+.create-request .card{transition:all 0.3s ease}
+.create-request .card:hover{box-shadow:0 8px 30px rgba(16,24,40,0.08)}
+#requestPreview div{padding:8px 12px;background:white;border-radius:10px;border:1px solid var(--line)}
+#requestPreview div b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+#requestPreview div span{font-size:14px;font-weight:700}
 .form-select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:white;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:all 0.3s}
 .form-select:hover{border-color:var(--blue)}
 .form-select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,94,239,0.1)}
@@ -57,10 +57,10 @@
 .form-textarea{resize:vertical;min-height:60px;width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px}
 .form-textarea:hover{border-color:var(--blue)}
 .form-textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,94,239,0.1)}
-.order-list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);margin-bottom:6px;font-size:13px;transition:all .2s}
-.order-list-item:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.order-list-item .order-id{font-weight:800;color:var(--blue)}
-.order-list-item .order-info{color:var(--muted);font-size:12px}
+.request-list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);margin-bottom:6px;font-size:13px;transition:all .2s}
+.request-list-item:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.request-list-item .request-id{font-weight:800;color:var(--blue)}
+.request-list-item .request-info{color:var(--muted);font-size:12px}
 
 .upload-tabs{display:flex;gap:4px;background:#f2f4f7;border:1px solid var(--line);padding:4px;border-radius:14px;margin-bottom:18px}
 .upload-tab{border:0;padding:10px 18px;border-radius:10px;font-weight:800;font-size:13px;background:transparent;color:#475467;cursor:pointer;transition:all .3s}
@@ -71,8 +71,8 @@
 .header-selection-grid label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:8px 12px;border-radius:10px;background:#f8fbff;border:1px solid var(--line);cursor:pointer;transition:all .2s}
 .header-selection-grid label:hover{background:var(--soft-blue);border-color:var(--blue)}
 .header-selection-grid label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
-.order-header-drag-area{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:80px;transition:all .3s}
-.order-header-drag-area.drag-over{border-color:var(--blue);background:var(--soft-blue)}
+.request-header-drag-area{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:80px;transition:all .3s}
+.request-header-drag-area.drag-over{border-color:var(--blue);background:var(--soft-blue)}
 </style>
 </head>
 <body>
@@ -87,7 +87,7 @@
 <div class="menu-row" onclick="openModule('adjustment',this)">📝 Adjustment <span id="adjBadge" class="badge">3</span></div>
 <div class="menu-row" onclick="openModule('reports',this)">📊 Reports</div>
 <div class="menu-row" onclick="openModule('master',this)">🗂️ Master Data</div>
-<div class="menu-row" onclick="openModule('upload',this)">📥 Upload & Import <span id="orderBadge" class="badge">0</span></div>
+<div class="menu-row" onclick="openModule('upload',this)">📥 Upload & Import <span id="requestBadge" class="badge">0</span></div>
 <div class="menu-row" onclick="openModule('integration',this)">🔗 Integration</div>
 <div class="menu-row" onclick="openModule('users',this)">👥 User Management</div>
 <div class="menu-row" onclick="openModule('settings',this)">⚙️ Settings</div>
@@ -121,7 +121,7 @@ var masterSampleData = {
     'SKU-44220': { product_code: 'SKU-44220', batch_lot: 'LOT-44220-R', physical_location: 'A1-03-01', physical_qty: '2050', uom: 'PCS', count_type: 'Cycle Count', remarks: 'Reserved qty issue', zone: 'Zone A', pid: 'PALLET-005', expected_qty: '2100' }
 };
 var sampleDataKeys = ['SKU-77120', 'SKU-88420', 'SKU-88120', 'SKU-55110', 'SKU-44220'];
-var countingOrders = [];
+var countingRequests = [];
 
 var discrepancyTrendData = {
     weekly: [{ label: 'Mon', value: 8, color: '#f04438' }, { label: 'Tue', value: 5, color: '#f79009' }, { label: 'Wed', value: 12, color: '#f04438' }, { label: 'Thu', value: 7, color: '#f79009' }, { label: 'Fri', value: 4, color: '#12b76a' }, { label: 'Sat', value: 2, color: '#12b76a' }, { label: 'Sun', value: 1, color: '#12b76a' }],
@@ -154,20 +154,20 @@ var damageReports = {
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function cls(s){s=String(s||'');if(/Posted|Synced|Matched|Confirmed|Completed|Approved/i.test(s))return 'ok';if(/Failed|Not|Rejected/i.test(s))return 'bad';if(/Pending|During|Review|Queue|Arrived|Submitted|Under Investigation/i.test(s))return 'warn';return 'info'}
 
-// ORDER FUNCTIONS
-function updateOrderBadge() {
-    var badge = document.getElementById('orderBadge');
+// REQUEST FUNCTIONS
+function updateRequestBadge() {
+    var badge = document.getElementById('requestBadge');
     if (badge) {
-        var count = countingOrders.length;
+        var count = countingRequests.length;
         badge.textContent = count;
         if (count === 0) badge.style.display = 'none';
         else badge.style.display = 'inline-block';
     }
 }
 
-function getOrderHeaders() {
+function getRequestHeaders() {
     var selected = [];
-    document.querySelectorAll('.order-header-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.request-header-checkbox').forEach(function(cb) {
         if (cb.checked) {
             var key = cb.dataset.key;
             var header = templateHeaders.find(function(h) { return h.key === key; });
@@ -177,8 +177,8 @@ function getOrderHeaders() {
     return selected;
 }
 
-function renderOrderHeaderSelection() {
-    var container = document.getElementById('orderHeaderSelection');
+function renderRequestHeaderSelection() {
+    var container = document.getElementById('requestHeaderSelection');
     if (!container) return;
     container.innerHTML = templateHeaders.map(function(h, index) {
         return '<div class="template-header-item" data-index="' + index + '" draggable="true">' +
@@ -186,11 +186,11 @@ function renderOrderHeaderSelection() {
             '<span class="header-index">#' + (index + 1) + '</span>' +
             '<span class="header-label">' + esc(h.label) + '</span>' +
             '<span class="header-check">' +
-            '<input type="checkbox" class="order-header-checkbox" data-key="' + h.key + '" ' + (h.checked ? 'checked' : '') + ' onchange="updateOrderPreview()">' +
+            '<input type="checkbox" class="request-header-checkbox" data-key="' + h.key + '" ' + (h.checked ? 'checked' : '') + ' onchange="updateRequestPreview()">' +
             '</span>' +
             '</div>';
     }).join('');
-    document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(item) {
+    document.querySelectorAll('#requestHeaderSelection .template-header-item').forEach(function(item) {
         item.addEventListener('dragstart', function(e) {
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
@@ -198,12 +198,12 @@ function renderOrderHeaderSelection() {
         });
         item.addEventListener('dragend', function(e) {
             this.classList.remove('dragging');
-            document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+            document.querySelectorAll('#requestHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
         });
         item.addEventListener('dragover', function(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
-            document.querySelectorAll('#orderHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
+            document.querySelectorAll('#requestHeaderSelection .template-header-item').forEach(function(el) { el.classList.remove('drag-over'); });
             this.classList.add('drag-over');
         });
         item.addEventListener('dragleave', function(e) { this.classList.remove('drag-over'); });
@@ -215,76 +215,72 @@ function renderOrderHeaderSelection() {
             if (fromIndex !== toIndex && !isNaN(fromIndex) && !isNaN(toIndex)) {
                 var item = templateHeaders.splice(fromIndex, 1)[0];
                 templateHeaders.splice(toIndex, 0, item);
-                renderOrderHeaderSelection();
-                updateOrderPreview();
+                renderRequestHeaderSelection();
+                updateRequestPreview();
                 showToast('✅ Header order updated!');
             }
         });
     });
-    updateOrderPreview();
+    updateRequestPreview();
 }
 
-function orderTabContent() {
-    return '<div class="create-order"><div class="grid2" style="margin-bottom:16px">'+
-        '<div class="card"><div class="title"><h3>📋 Order Details</h3><a>Required</a></div>'+
-        '<div class="field"><label>📌 Order Number / Request</label>'+
-        '<input id="orderNumber" class="form-input" value="COUNT-2026-001" placeholder="Enter order number or request ID..." oninput="updateOrderPreview()"></div>'+
+function requestTabContent() {
+    return '<div class="create-request"><div class="grid2" style="margin-bottom:16px">'+
+        '<div class="card"><div class="title"><h3>📋 Request Details</h3><a>Required</a></div>'+
+        '<div class="field"><label>📌 Request Number</label>'+
+        '<input id="requestNumber" class="form-input" value="REQ-2026-001" placeholder="Enter request number..." oninput="updateRequestPreview()"></div>'+
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">'+
-        '<div class="field"><label>📁 Project</label><select id="orderProject" class="form-select" onchange="updateOrderPreview()">'+
+        '<div class="field"><label>📁 Project</label><select id="requestProject" class="form-select" onchange="updateRequestPreview()">'+
         '<option value="">-- Select --</option><option value="CHEMSG">CHEMSG</option><option value="FMCG">FMCG</option><option value="PHARMA">PHARMA</option><option value="AUTO">AUTO</option></select></div>'+
-        '<div class="field"><label>🏢 Hub</label><select id="orderHub" class="form-select" onchange="updateOrderPreview()">'+
+        '<div class="field"><label>🏢 Hub</label><select id="requestHub" class="form-select" onchange="updateRequestPreview()">'+
         '<option value="">-- Select --</option><option value="SYMRISE">SYMRISE</option><option value="CENTRAL HUB">CENTRAL HUB</option><option value="NORTH HUB">NORTH HUB</option></select></div></div>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">'+
-        '<div class="field"><label>📦 Warehouse</label><select id="orderWarehouse" class="form-select" onchange="updateOrderPreview()">'+
+        '<div class="field"><label>📦 Warehouse</label>'+
+        '<select id="requestWarehouse" class="form-select" onchange="updateRequestPreview()">'+
         '<option value="">-- Select --</option><option value="CHEMPARK">CHEMPARK</option><option value="WH-A">WH-A</option><option value="WH-B">WH-B</option><option value="WH-C">WH-C</option></select></div>'+
-        '<div class="field"><label>👤 Assigned To</label><select id="orderAssignee" class="form-select">'+
-        '<option value="Ahmad Alwi">Ahmad Alwi</option><option value="Nursyahirah Ira">Nursyahirah Ira</option>'+
-        '<option value="Nur Adlina Alin">Nur Adlina Alin</option><option value="James Timothy">James Timothy</option></select></div></div>'+
-        '<div class="field"><label>📝 Notes</label><textarea id="orderNotes" class="form-textarea" rows="2" placeholder="Add notes..."></textarea></div></div>'+
+        '<div class="field"><label>📝 Notes</label><textarea id="requestNotes" class="form-textarea" rows="2" placeholder="Add notes..."></textarea></div></div>'+
         '<div class="card"><div class="title"><h3>📋 Select Counting Headers</h3><a>Drag to reorder</a></div>'+
         '<p class="muted" style="margin-bottom:10px;font-size:12px">Drag ⠿ to reorder headers. Check to include in counting template.</p>'+
-        '<div id="orderHeaderSelection"></div><hr style="margin:14px 0;border-color:var(--line)">'+
-        '<div class="title"><h3>👀 Order Preview</h3><a>Summary</a></div>'+
-        '<div id="orderPreview" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'+
-        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Order</b><br><span id="previewOrder" style="font-weight:700">-</span></div>'+
+        '<div id="requestHeaderSelection"></div><hr style="margin:14px 0;border-color:var(--line)">'+
+        '<div class="title"><h3>👀 Request Preview</h3><a>Summary</a></div>'+
+        '<div id="requestPreview" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'+
+        '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Request</b><br><span id="previewRequest" style="font-weight:700">-</span></div>'+
         '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Project</b><br><span id="previewProject" style="font-weight:700">-</span></div>'+
         '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Hub</b><br><span id="previewHub" style="font-weight:700">-</span></div>'+
         '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line)"><b style="font-size:11px;color:var(--muted)">Warehouse</b><br><span id="previewWarehouse" style="font-weight:700">-</span></div>'+
         '<div style="padding:6px 10px;background:white;border-radius:8px;border:1px solid var(--line);grid-column:span 2"><b style="font-size:11px;color:var(--muted)">Headers Selected</b><br><span id="previewHeaders" style="font-weight:700;font-size:12px">-</span></div>'+
         '</div>'+
-        '<button class="primary" onclick="saveCountingOrder()" style="margin-top:14px;width:100%;padding:14px">✅ Create Order</button></div></div>';
+        '<button class="primary" onclick="saveCountingRequest()" style="margin-top:14px;width:100%;padding:14px">✅ Create Request</button></div></div>';
 }
 
-function updateOrderPreview() {
-    var orderNum = document.getElementById('orderNumber').value || '-';
-    var project = document.getElementById('orderProject').value || '-';
-    var hub = document.getElementById('orderHub').value || '-';
-    var warehouse = document.getElementById('orderWarehouse').value || '-';
-    document.getElementById('previewOrder').textContent = orderNum;
+function updateRequestPreview() {
+    var reqNum = document.getElementById('requestNumber').value || '-';
+    var project = document.getElementById('requestProject').value || '-';
+    var hub = document.getElementById('requestHub').value || '-';
+    var warehouse = document.getElementById('requestWarehouse').value || '-';
+    document.getElementById('previewRequest').textContent = reqNum;
     document.getElementById('previewProject').textContent = project;
     document.getElementById('previewHub').textContent = hub;
     document.getElementById('previewWarehouse').textContent = warehouse;
     var selected = [];
-    document.querySelectorAll('.order-header-checkbox:checked').forEach(function(cb) {
+    document.querySelectorAll('.request-header-checkbox:checked').forEach(function(cb) {
         var header = templateHeaders.find(function(h) { return h.key === cb.dataset.key; });
         if (header) selected.push(header.label);
     });
     document.getElementById('previewHeaders').textContent = selected.length > 0 ? selected.join(', ') : 'No headers selected';
 }
 
-function saveCountingOrder() {
-    var orderNum = document.getElementById('orderNumber').value.trim();
-    var project = document.getElementById('orderProject').value;
-    var hub = document.getElementById('orderHub').value;
-    var warehouse = document.getElementById('orderWarehouse').value;
-    var assignee = document.getElementById('orderAssignee').value;
-    var notes = document.getElementById('orderNotes').value;
-    if (!orderNum || !project || !hub || !warehouse) {
-        openModal('⚠️ Incomplete Order', 'Please fill in Order Number, Project, Hub, and Warehouse.', '⚠️');
+function saveCountingRequest() {
+    var reqNum = document.getElementById('requestNumber').value.trim();
+    var project = document.getElementById('requestProject').value;
+    var hub = document.getElementById('requestHub').value;
+    var warehouse = document.getElementById('requestWarehouse').value;
+    var notes = document.getElementById('requestNotes').value;
+    if (!reqNum || !project || !hub || !warehouse) {
+        openModal('⚠️ Incomplete Request', 'Please fill in Request Number, Project, Hub, and Warehouse.', '⚠️');
         return;
     }
     var selectedHeaders = [];
-    document.querySelectorAll('.order-header-checkbox:checked').forEach(function(cb) {
+    document.querySelectorAll('.request-header-checkbox:checked').forEach(function(cb) {
         var header = templateHeaders.find(function(h) { return h.key === cb.dataset.key; });
         if (header) selectedHeaders.push(header);
     });
@@ -292,25 +288,24 @@ function saveCountingOrder() {
         openModal('⚠️ No Headers Selected', 'Please select at least one header for counting.', '⚠️');
         return;
     }
-    var order = { id: orderNum, project: project, hub: hub, warehouse: warehouse, assignee: assignee, notes: notes, headers: selectedHeaders, status: 'Active', createdAt: new Date().toISOString() };
-    countingOrders.push(order);
-    saveOrdersToStorage();
-    updateMobileEnvironment(order);
-    updateOrderBadge();
-    openModal('✅ Order Created', 'Order ' + order.id + ' has been created successfully!<br><br><b>Project:</b> ' + order.project + '<br><b>Hub:</b> ' + order.hub + '<br><b>Warehouse:</b> ' + order.warehouse + '<br><b>Headers:</b> ' + selectedHeaders.length + ' selected<br><b>Count Ver:</b> VER-001 (Auto)', '✅', [['Status', 'Active', 'ok'], ['Sync', 'Ready to Mobile', 'info']]);
-    showToast('✅ Order ' + order.id + ' created and synced to Mobile!');
+    var request = { id: reqNum, project: project, hub: hub, warehouse: warehouse, notes: notes, headers: selectedHeaders, status: 'Active', createdAt: new Date().toISOString() };
+    countingRequests.push(request);
+    saveRequestsToStorage();
+    updateMobileEnvironment(request);
+    updateRequestBadge();
+    openModal('✅ Request Created', 'Request ' + request.id + ' has been created successfully!<br><br><b>Project:</b> ' + request.project + '<br><b>Hub:</b> ' + request.hub + '<br><b>Warehouse:</b> ' + request.warehouse + '<br><b>Headers:</b> ' + selectedHeaders.length + ' selected<br><b>Count Ver:</b> VER-001 (Auto)', '✅', [['Status', 'Active', 'ok'], ['Sync', 'Ready to Mobile', 'info']]);
+    showToast('✅ Request ' + request.id + ' created and synced to Mobile!');
 }
 
-function updateMobileEnvironment(order) {
-    envProject = order.project;
-    envHub = order.hub;
-    envWarehouse = order.warehouse;
+function updateMobileEnvironment(request) {
+    envProject = request.project;
+    envHub = request.hub;
+    envWarehouse = request.warehouse;
     mobileMenuReady = true;
-    // Auto set count ver ke VER-001 untuk order baru
     mobileCountVer = 'VER-001';
-    if (order.headers && order.headers.length > 0) {
+    if (request.headers && request.headers.length > 0) {
         templateHeaders.forEach(function(h) {
-            h.checked = order.headers.some(function(oh) { return oh.key === h.key; });
+            h.checked = request.headers.some(function(oh) { return oh.key === h.key; });
         });
     }
     var mobileView = document.getElementById('mobile');
@@ -320,43 +315,43 @@ function updateMobileEnvironment(order) {
     }
 }
 
-function saveOrdersToStorage() {
-    try { localStorage.setItem('countingOrders', JSON.stringify(countingOrders)); } catch(e) {}
+function saveRequestsToStorage() {
+    try { localStorage.setItem('countingRequests', JSON.stringify(countingRequests)); } catch(e) {}
 }
 
-function loadOrdersFromStorage() {
+function loadRequestsFromStorage() {
     try {
-        var saved = localStorage.getItem('countingOrders');
+        var saved = localStorage.getItem('countingRequests');
         if (saved) {
-            countingOrders = JSON.parse(saved);
-            updateOrderBadge();
+            countingRequests = JSON.parse(saved);
+            updateRequestBadge();
         }
     } catch(e) {}
 }
 
-function viewAllOrders() {
-    if (countingOrders.length === 0) {
-        openModal('📋 No Orders', 'No counting orders have been created yet.', '📋');
+function viewAllRequests() {
+    if (countingRequests.length === 0) {
+        openModal('📋 No Requests', 'No counting requests have been created yet.', '📋');
         return;
     }
-    var orderList = countingOrders.map(function(o) {
+    var requestList = countingRequests.map(function(o) {
         var statusClass = o.status === 'Active' ? 'ok' : 'info';
         var headerCount = o.headers ? o.headers.length : 0;
-        return '<div class="order-list-item"><span class="order-id">' + o.id + '</span><span class="order-info">' + o.project + ' › ' + o.warehouse + '</span><span class="pill ' + statusClass + '">' + o.status + '</span><span class="pill info">' + headerCount + ' headers</span><span class="pill info">VER-001</span><button class="light" style="padding:4px 12px;font-size:11px" onclick="loadOrderToMobile(\'' + o.id + '\')">📱 Load</button></div>';
+        return '<div class="request-list-item"><span class="request-id">' + o.id + '</span><span class="request-info">' + o.project + ' › ' + o.warehouse + '</span><span class="pill ' + statusClass + '">' + o.status + '</span><span class="pill info">' + headerCount + ' headers</span><span class="pill info">VER-001</span><button class="light" style="padding:4px 12px;font-size:11px" onclick="loadRequestToMobile(\'' + o.id + '\')">📱 Load</button></div>';
     }).join('');
-    openModal('📋 Counting Orders (' + countingOrders.length + ')', 'List of all created counting orders. Click "Load" to sync to mobile.', '📋', [['Total Orders', String(countingOrders.length), 'info']]);
-    document.getElementById('modalRows').innerHTML = orderList;
+    openModal('📋 Counting Requests (' + countingRequests.length + ')', 'List of all created counting requests. Click "Load" to sync to mobile.', '📋', [['Total Requests', String(countingRequests.length), 'info']]);
+    document.getElementById('modalRows').innerHTML = requestList;
 }
 
-function loadOrderToMobile(orderId) {
-    var order = countingOrders.find(function(o) { return o.id === orderId; });
-    if (!order) {
-        openModal('❌ Not Found', 'Order ' + orderId + ' not found.', '❌');
+function loadRequestToMobile(requestId) {
+    var request = countingRequests.find(function(o) { return o.id === requestId; });
+    if (!request) {
+        openModal('❌ Not Found', 'Request ' + requestId + ' not found.', '❌');
         return;
     }
-    updateMobileEnvironment(order);
+    updateMobileEnvironment(request);
     showView('mobile');
-    showToast('📱 Order ' + orderId + ' loaded to mobile! (VER-001)');
+    showToast('📱 Request ' + requestId + ' loaded to mobile! (VER-001)');
 }
 
 // UPLOAD PAGE
@@ -390,16 +385,16 @@ function uploadPage() {
         '<div class="module click" onclick="triggerUpload()"><div class="module-icon blue">📤</div><h4>Result Upload</h4><p class="muted">Upload result and transfer to UI.</p></div>'+
         '<div class="module click" onclick="openModal(\'Error Preview\',\'Validation checks missing batch/lot, invalid UOM and duplicate location.\',\'⚠️\')"><div class="module-icon orange">⚠️</div><h4>Error Preview</h4><p class="muted">Preview invalid rows.</p></div>'+
         '<div class="module click" onclick="openModal(\'Upload History\',\'Latest uploads recorded with status.\',\'📜\')"><div class="module-icon purple">📜</div><h4>Upload History</h4><p class="muted">Audit file and status.</p></div></section>';
-    var orderContent = orderTabContent();
-    return '<div class="head"><div><h1>📥 Upload & Import</h1><p>Customize template headers, upload data, and create counting orders.</p></div><div class="actions">'+
+    var requestContent = requestTabContent();
+    return '<div class="head"><div><h1>📥 Upload & Import</h1><p>Customize template headers, upload data, and create counting requests.</p></div><div class="actions">'+
         '<button class="primary" onclick="downloadCustomTemplate()">📥 Download Template</button>'+
         '<button class="light" onclick="triggerUpload()">📤 Upload Excel</button>'+
         '<button class="light" onclick="autoGenerateUploadData()">⚡ Auto Generate Data</button>'+
-        '<button class="light" onclick="viewAllOrders()">📋 View Orders (' + countingOrders.length + ')</button></div></div>'+
+        '<button class="light" onclick="viewAllRequests()">📋 View Requests (' + countingRequests.length + ')</button></div></div>'+
         '<div class="upload-tabs"><button class="upload-tab ' + (currentUploadTab === 'template' ? 'active' : '') + '" onclick="switchUploadTab(\'template\')">📄 Upload Result</button>'+
-        '<button class="upload-tab ' + (currentUploadTab === 'order' ? 'active' : '') + '" onclick="switchUploadTab(\'order\')">📋 Create Order</button></div>'+
+        '<button class="upload-tab ' + (currentUploadTab === 'request' ? 'active' : '') + '" onclick="switchUploadTab(\'request\')">📋 Create Request</button></div>'+
         '<div id="uploadTemplateContent" class="' + (currentUploadTab === 'template' ? '' : 'hidden') + '">' + templateContent + '</div>'+
-        '<div id="uploadOrderContent" class="' + (currentUploadTab === 'order' ? '' : 'hidden') + '">' + orderContent + '</div>';
+        '<div id="uploadRequestContent" class="' + (currentUploadTab === 'request' ? '' : 'hidden') + '">' + requestContent + '</div>';
 }
 
 function switchUploadTab(tab) {
@@ -409,12 +404,12 @@ function switchUploadTab(tab) {
     if (tab === 'template') {
         tabs[0].classList.add('active');
         document.getElementById('uploadTemplateContent').classList.remove('hidden');
-        document.getElementById('uploadOrderContent').classList.add('hidden');
+        document.getElementById('uploadRequestContent').classList.add('hidden');
     } else {
         tabs[1].classList.add('active');
         document.getElementById('uploadTemplateContent').classList.add('hidden');
-        document.getElementById('uploadOrderContent').classList.remove('hidden');
-        setTimeout(function() { renderOrderHeaderSelection(); updateOrderPreview(); }, 100);
+        document.getElementById('uploadRequestContent').classList.remove('hidden');
+        setTimeout(function() { renderRequestHeaderSelection(); updateRequestPreview(); }, 100);
     }
 }
 
@@ -681,8 +676,8 @@ var pages = {
 function showToast(msg){ var t=document.createElement('div'); t.className='toast'; t.innerHTML=msg; document.body.appendChild(t); setTimeout(function(){t.remove();},1500); }
 
 var envProject='', envHub='', envWarehouse='';
-var mobileCountType='', mobileRequest='';
-var mobileCountVer='VER-001'; // Default VER-001
+var mobileCountType='';
+var mobileCountVer='VER-001';
 
 function environmentWizard(){
  if(!envProject){ return '<div class="phone-card"><h3>🚀 Select Project</h3><button class="submit" onclick="envProject=\'CHEMSG\';refreshMobile()">CHEMSG</button><button class="submit" onclick="envProject=\'FMCG\';refreshMobile()">FMCG</button><button class="submit" onclick="envProject=\'PHARMA\';refreshMobile()">PHARMA</button></div>'; }
@@ -713,7 +708,6 @@ function startCounting(){
    openModal('Incomplete','Please select COUNT TYPE. (COUNT VER auto-set to VER-001)','⚠️');
    return;
  }
- // Auto set count ver
  mobileCountVer = 'VER-001';
  openModal('✅ Count Started','Count Type: '+mobileCountType+'<br>Count Ver: '+mobileCountVer+' (Auto)<br><br>Counting session started successfully!','📋');
  refreshMobile();
@@ -726,16 +720,16 @@ if(!envWarehouse){ content=environmentWizard(); }
 else if(!mobileMenuReady){ content=mobileMainMenu(); }
 else{
   if(!mobileCountType){
-    var orderButtons = '';
-    if (countingOrders.length > 0) {
-      orderButtons = '<div style="margin-bottom:12px"><small style="color:var(--muted);font-weight:800">📋 Load from Order</small>' +
-        countingOrders.map(function(o) {
+    var requestButtons = '';
+    if (countingRequests.length > 0) {
+      requestButtons = '<div style="margin-bottom:12px"><small style="color:var(--muted);font-weight:800">📋 Load from Request</small>' +
+        countingRequests.map(function(o) {
           var headerCount = o.headers ? o.headers.length : 0;
-          return '<div class="count-type-btn" onclick="loadOrderToMobile(\'' + o.id + '\')">📋 ' + o.id + ' - ' + o.project + ' › ' + o.warehouse + '<br><small style="font-weight:400">' + headerCount + ' headers selected</small></div>';
+          return '<div class="count-type-btn" onclick="loadRequestToMobile(\'' + o.id + '\')">📋 ' + o.id + ' - ' + o.project + ' › ' + o.warehouse + '<br><small style="font-weight:400">' + headerCount + ' headers selected</small></div>';
         }).join('') +
         '<hr style="margin:12px 0;border-color:var(--line)"></div>';
     }
-    content='<div class="phone-card"><h3 style="margin-bottom:12px">📋 Select Count Parameters</h3>'+orderButtons+
+    content='<div class="phone-card"><h3 style="margin-bottom:12px">📋 Select Count Parameters</h3>'+requestButtons+
       '<div style="margin-bottom:12px"><small style="color:var(--muted);font-weight:800">COUNT TYPE *</small>'+
       '<div class="count-type-btn'+(mobileCountType==='PHYSICAL INVENTORY'?' selected':'')+'" onclick="selectCountType(\'PHYSICAL INVENTORY\')">📦 PHYSICAL INVENTORY</div>'+
       '<div class="count-type-btn'+(mobileCountType==='CYCLE COUNT'?' selected':'')+'" onclick="selectCountType(\'CYCLE COUNT\')">🔄 CYCLE COUNT</div>'+
@@ -745,13 +739,13 @@ else{
       '<button class="submit" style="margin-top:16px" onclick="startCounting()">▶ Start Counting</button>'+
       '<button class="submit" style="margin-top:8px;background:#667085" onclick="mobileMenuReady=false;refreshMobile()">◀ Back to Menu</button></div>';
   }else{
-    var orderInfo = countingOrders.find(function(o) { return o.countType === mobileCountType; });
-    var orderLabel = orderInfo ? '📋 ' + orderInfo.id : '';
-    content='<div id="phoneBody" class="phone-body"></div><div class="phone-card" style="background:var(--soft-blue);border-color:var(--blue)"><small style="color:var(--muted)">Active Count Session</small><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px;flex-wrap:wrap"><span><b>Type:</b> '+mobileCountType+'</span><span><b>Ver:</b> VER-001</span>'+(orderLabel ? '<span><b>Order:</b> '+orderLabel+'</span>' : '')+'</div><button class="submit" style="margin-top:8px;padding:8px;font-size:12px" onclick="mobileCountType=\'\';refreshMobile()">🔄 Change Selection</button></div>';
+    var requestInfo = countingRequests.find(function(o) { return o.countType === mobileCountType; });
+    var requestLabel = requestInfo ? '📋 ' + requestInfo.id : '';
+    content='<div id="phoneBody" class="phone-body"></div><div class="phone-card" style="background:var(--soft-blue);border-color:var(--blue)"><small style="color:var(--muted)">Active Count Session</small><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px;flex-wrap:wrap"><span><b>Type:</b> '+mobileCountType+'</span><span><b>Ver:</b> VER-001</span>'+(requestLabel ? '<span><b>Request:</b> '+requestLabel+'</span>' : '')+'</div><button class="submit" style="margin-top:8px;padding:8px;font-size:12px" onclick="mobileCountType=\'\';refreshMobile()">🔄 Change Selection</button></div>';
     setTimeout(function(){openPhone('dashboard')},100);
   }
 }
-return '<div class="head"><div><h1>📱 Mobile Counting</h1><p>Warehouse counting with offline support</p></div></div><section class="phone-stage"><div class="card"><h3>🔗 Connected Environment</h3><div class="status" style="margin-top:12px"><div class="status-row"><b>Project</b><span>'+(envProject||'-')+'</span></div><div class="status-row"><b>Hub</b><span>'+(envHub||'-')+'</span></div><div class="status-row"><b>Warehouse</b><span>'+(envWarehouse||'-')+'</span></div><div class="status-row"><b>Orders</b><span>'+countingOrders.length+' created</span></div></div><button class="light" onclick="viewAllOrders()" style="margin-top:12px;width:100%">📋 View All Orders</button></div><div class="phone"><div class="screen"><div class="phone-top"><b>☰ Y-COUNT</b><span>🔔 3</span></div>'+content+'<div class="phone-nav"><div onclick="openPhone(\'dashboard\')">⌂<br>Dashboard</div><div onclick="openPhone(\'count\')">📋<br>Count</div><div onclick="openPhone(\'blank\')">📍<br>Blank</div><div onclick="openPhone(\'more\')">⋯<br>More</div></div></div></div></section>';
+return '<div class="head"><div><h1>📱 Mobile Counting</h1><p>Warehouse counting with offline support</p></div></div><section class="phone-stage"><div class="card"><h3>🔗 Connected Environment</h3><div class="status" style="margin-top:12px"><div class="status-row"><b>Project</b><span>'+(envProject||'-')+'</span></div><div class="status-row"><b>Hub</b><span>'+(envHub||'-')+'</span></div><div class="status-row"><b>Warehouse</b><span>'+(envWarehouse||'-')+'</span></div><div class="status-row"><b>Requests</b><span>'+countingRequests.length+' created</span></div></div><button class="light" onclick="viewAllRequests()" style="margin-top:12px;width:100%">📋 View All Requests</button></div><div class="phone"><div class="screen"><div class="phone-top"><b>☰ Y-COUNT</b><span>🔔 3</span></div>'+content+'<div class="phone-nav"><div onclick="openPhone(\'dashboard\')">⌂<br>Dashboard</div><div onclick="openPhone(\'count\')">📋<br>Count</div><div onclick="openPhone(\'blank\')">📍<br>Blank</div><div onclick="openPhone(\'more\')">⋯<br>More</div></div></div></div></section>';
 }
 
 function openPhone(name){var el=document.getElementById('phoneBody');if(!el)return;var screens={dashboard:'<div class="phone-card" style="background:linear-gradient(135deg,#07192f,#155eef);color:white;border:0"><div style="display:flex;justify-content:space-between;align-items:center"><div><small style="opacity:.75">Today Progress</small><h2 style="margin-top:4px">75%</h2><p style="opacity:.78;font-size:12px">96 of 128 count jobs completed</p></div><div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#12b76a 0 75%,rgba(255,255,255,.25) 75%);display:grid;place-items:center"><div style="width:58px;height:58px;border-radius:50%;background:#07192f;display:grid;place-items:center;font-weight:900">75%</div></div></div></div><div class="mobile-kpis"><div class="mobile-kpi"><small>Tasks</small><b>128</b></div><div class="mobile-kpi"><small>Done</small><b style="color:var(--green)">96</b></div><div class="mobile-kpi"><small>Blank</small><b style="color:var(--orange)">3</b></div><div class="mobile-kpi"><small>Damage</small><b style="color:var(--red)">6</b></div><div class="mobile-kpi"><small>Pending QC</small><b style="color:var(--blue)">2</b></div></div><div class="phone-card"><h4>Quick Actions</h4><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px"><div onclick="openPhone(\'scan\')" style="text-align:center;font-size:11px;font-weight:800"><div class="blue" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">▦</div>Scan</div><div onclick="openPhone(\'count\')" style="text-align:center;font-size:11px;font-weight:800"><div class="green" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">✓</div>Count</div><div onclick="openPhone(\'offline\')" style="text-align:center;font-size:11px;font-weight:800"><div class="purple" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">☁</div>Sync</div><div onclick="openPhone(\'blank\')" style="text-align:center;font-size:11px;font-weight:800"><div class="orange" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">📍</div>Blank</div><div onclick="openPhone(\'reports\')" style="text-align:center;font-size:11px;font-weight:800"><div class="red" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;margin:0 auto 6px;font-size:22px">📷</div>Reports</div></div></div><div class="phone-card"><h4>Live Mobile Activity</h4><div class="status" style="margin-top:10px"><div class="status-row"><b>WH-01-A-12</b><span class="pill warn">Counting</span></div><div class="status-row"><b>Offline Queue</b><span class="pill info">2 Pending</span></div><div class="status-row"><b>Next Location</b><span class="pill ok">Ready</span></div></div></div>',count:'<div class="phone-card"><h4>📦 Count Entry + Quality Inspection</h4><div class="phone-card" style="background:#f8fbff"><b>SKU-88120</b><br><small>BATCH-B240520 • WH-01-A-12</small></div><div class="input-demo"><small>⚖ Physical Qty</small><div style="font-size:28px;font-weight:900">1,520 KG</div><span class="pill ok">Converted from 1.52 Ton</span></div><div class="input-demo"><small>Quality Inspection</small><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"><span class="pill ok">✓ Good</span><span class="pill bad">⚠ Damaged</span><span class="pill warn">⌛ Expired</span><span class="pill info">💧 Leaking</span><span class="pill-purple pill">📦 Broken Packaging</span></div></div><div class="input-demo"><small>Damage Qty</small><div style="display:flex;justify-content:space-between;font-weight:900"><span>➖</span><span>20 KG</span><span>➕</span></div></div><div class="input-demo"><small>Severity</small><div style="display:flex;gap:10px"><span class="pill">Minor</span><span class="pill warn">Major</span><span class="pill bad">Critical</span></div></div><div class="input-demo"><small>Evidence Photo</small><div style="padding:12px;border:1px dashed #ccc;border-radius:12px;text-align:center">📷 Capture Damage Evidence<br><small>IMG_2026_001.jpg ✓ Uploaded</small></div></div><div class="input-demo"><small>Remarks</small><b>Packaging torn during counting</b><div style="text-align:right;color:#667085">31/200</div></div><button class="submit" onclick="openPhone(\'submit\')">✓ Submit Count</button><button class="submit" style="background:linear-gradient(135deg,var(--purple),var(--cyan))" onclick="openPhone(\'offline\')">☁ Save Offline</button><button class="submit" style="background:white;color:var(--blue);border:1px solid var(--line)" onclick="openPhone(\'continue\')">→ Next Location</button></div>',blank:'<div class="phone-card"><h4>Blank Count Entry</h4><div class="input-demo"><small>Product Code</small><b>SKU-77120</b></div><div class="input-demo"><small>Batch / Lot No</small><b>LOT-2405-A</b></div><div class="input-demo"><small>Physical Location</small><b>B2-03-05</b></div><div class="input-demo"><small>Physical Actual Qty</small><b>500 PCS</b></div><button class="submit" onclick="openPhone(\'blankResult\')">Validate Blank Count</button></div>',blankResult:'<div class="phone-card" style="text-align:center"><div style="font-size:50px">📍</div><h3>Location Mismatch Detected</h3><p class="muted">Qty and batch/lot matched, but location different.</p><button class="submit" onclick="openPhone(\'blankAction\')">Generate Action</button><button class="submit" onclick="openPhone(\'blankReport\')">View Report</button></div>',blankAction:'<div class="phone-card" style="text-align:center"><div style="font-size:50px;color:var(--green)">✓</div><h3>Action Created</h3><p class="muted">Location correction task created.</p><button class="submit" onclick="openPhone(\'dashboard\')">Back Dashboard</button></div>',blankReport:'<div class="phone-card"><h4>Blank Count Report</h4><div class="status"><div class="status-row"><b>Total Issues</b><span class="pill warn">3</span></div><div class="status-row"><b>Qty Variance</b><span class="pill ok">0</span></div></div><button class="submit" onclick="openPhone(\'blankAction\')">Create Action</button></div>',scan:'<div class="phone-card"><h4>Scan Item</h4><div class="scan-box">▦<br>Scanning barcode...</div><button class="submit" onclick="openPhone(\'count\')">Use Item</button></div>',submit:'<div class="phone-card" style="text-align:center;padding:24px"><div style="width:86px;height:86px;border-radius:50%;background:var(--soft-green);display:grid;place-items:center;margin:0 auto 16px;font-size:46px;color:var(--green)">✓</div><h3>Count Submitted</h3><p class="muted" style="margin-top:8px">Count result recorded with audit trail.</p><button class="submit" onclick="openPhone(\'offline\')">☁ Save / Sync Mode</button><button class="submit" style="background:white;color:var(--blue);border:1px solid var(--line)" onclick="openPhone(\'continue\')">→ Continue to Next Location</button></div>',offline:'<div class="phone-card"><h3>Offline Queue Active</h3><div class="status"><div class="status-row"><b>WH-01-A-12</b><span class="pill warn">Pending Sync</span></div><div class="status-row"><b>WH-02-C-01</b><span class="pill warn">Pending Sync</span></div></div><button class="submit" onclick="openPhone(\'sync\')">Sync Now</button><button class="submit" onclick="openPhone(\'continue\')">Continue Count</button></div>',sync:'<div class="phone-card"><h3>Sync Completed</h3><button class="submit" onclick="openPhone(\'dashboard\')">Back Dashboard</button></div>',continue:'<div class="phone-card"><h3>Continue Count</h3><div class="status"><div class="status-row"><b>WH-02-C-01</b><span class="pill warn">Next</span></div><div class="status-row"><b>WH-01-A-12</b><span class="pill ok">Ready</span></div></div><button class="submit" onclick="openPhone(\'count\')">Continue Counting</button></div>',more:'<div class="phone-card"><h4>More Menu</h4><button class="submit" onclick="openPhone(\'profile\')">Profile</button><button class="submit" onclick="openPhone(\'guide\')">User Guide</button><button class="submit" onclick="openPhone(\'support\')">Help & Support</button><button class="submit" onclick="mobileLogout()">Logout</button></div>',profile:'<div class="phone-card"><h4>Profile</h4><p>edurise • Group 3</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>',guide:'<div class="phone-card"><h4>User Guide</h4><p>Scan → Count → Validate → Submit.</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>',reports:'<div class="phone-card"><h4>My Reports</h4><div class="status"><div class="status-row"><b>CNT-240601-001</b><span class="pill ok">Completed</span></div><div class="status-row"><b>DR-240601-001</b><span class="pill warn">Pending QC</span></div><div class="status-row"><b>DR-240601-002</b><span class="pill ok">Approved</span></div></div><button class="submit" onclick="openPhone(\'reportDetail\')">View Latest Report</button></div>',reportDetail:'<div class="phone-card"><h4>Damage Report Detail</h4><div class="input-demo"><small>Report ID</small><b>DR-240601-001</b></div><div class="input-demo"><small>Category</small><b>Broken Packaging</b></div><div class="input-demo"><small>Damage Qty</small><b>20 KG</b></div><div class="input-demo"><small>Severity</small><b>Major</b></div><div class="input-demo"><small>Evidence</small><b>📷 1 Photo Attached</b></div><div class="input-demo"><small>Status</small><b>Pending QC Review</b></div><button class="submit" onclick="openPhone(\'reports\')">Back</button></div>',support:'<div class="phone-card"><h4>Help & Support</h4><p>Access, connectivity and data issue support.</p><button class="submit" onclick="openPhone(\'more\')">Back</button></div>'};el.innerHTML=screens[name]||screens.dashboard}
@@ -768,12 +762,12 @@ function render(name){var fn=pages[name]||pages.dashboard;document.getElementByI
             if (currentUploadTab === 'template') {
                 tabs[0].classList.add('active');
                 document.getElementById('uploadTemplateContent').classList.remove('hidden');
-                document.getElementById('uploadOrderContent').classList.add('hidden');
+                document.getElementById('uploadRequestContent').classList.add('hidden');
             } else {
                 tabs[1].classList.add('active');
                 document.getElementById('uploadTemplateContent').classList.add('hidden');
-                document.getElementById('uploadOrderContent').classList.remove('hidden');
-                setTimeout(function(){ renderOrderHeaderSelection(); updateOrderPreview(); }, 100);
+                document.getElementById('uploadRequestContent').classList.remove('hidden');
+                setTimeout(function(){ renderRequestHeaderSelection(); updateRequestPreview(); }, 100);
             }
         }
     }, 100);
@@ -804,7 +798,7 @@ function applyRoleAccess(){
    });
  }
  updateAdjBadge();
- updateOrderBadge();
+ updateRequestBadge();
 }
 
 function login(){
@@ -832,7 +826,7 @@ function login(){
         if(m.innerText.includes('User Management') || m.innerText.includes('Settings')) m.style.display='none';
       });
    }
-   loadOrdersFromStorage();
+   loadRequestsFromStorage();
    applyRoleAccess(); render('dashboard');
  }else{ openModal('Login Failed','Use demo role accounts.','⚠️'); }
 }
@@ -852,7 +846,7 @@ function downloadExcel(rows,name){var html='<html><head><meta charset="UTF-8"></
 function exportExcelDemo(name){var blank=name.toLowerCase().indexOf('blank')>-1;var rows;if(blank){rows=[['Report','Blank Count / Product Location Mismatch'],['Generated',new Date().toLocaleString()],[],['SKU','Batch/Lot','System Location','Physical Location','System Qty','Physical Qty','Status','Action'],['SKU-77120','LOT-2405-A','A1-01-01','B2-03-05','500 PCS','500 PCS','Location Mismatch','Location Correction']]}else{var d=varianceData[currentSku]||varianceData['SKU-88120'];rows=[['Report','Variance Auto Result Validation'],['Generated',new Date().toLocaleString()],['SKU',currentSku],['Batch / Lot',d.batch],['Location',d.loc],[],['Opening Balance',d.opening],['Total Inbound',d.totalIn],['Total Outbound',d.totalOut],['Expected SOH',d.expected],['Physical Count',d.qtyPhy],['Variance',d.varQty],['Root Cause',d.cause],[],['Realtime Inventory Accuracy Monitoring',''],['Inventory Accuracy','97.4%'],['Count Accuracy','94.8%'],['Location Accuracy','91.2%'],['SKU Accuracy','97%'],['Batch/Lot Accuracy','95%'],['UOM Accuracy','98%'],[],['FLOW','DOCUMENT TYPE','REFERENCE','DOC DATE','POSTING TIME','PIC / USER','SOURCE SYSTEM','QTY IMPACT','RUNNING SOH','STATUS']].concat(d.tx)}downloadExcel(rows,name.replace(/\.xlsx$/i,'.xls'));openModal('Export Analysis',name+' downloaded successfully.','📊',[['Format','Excel-readable .xls','ok'],['Status','Downloaded','info']])}
 function generatePDFReport(){var w=window.open('','_blank');if(!w){openModal('Popup Blocked','Allow popups to generate report.','⚠️');return}var html='<!DOCTYPE html><html><head><title>Y-COUNT Report</title><style>body{font-family:Segoe UI,Arial;padding:28px;color:#101828}h1{color:#155eef}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.card{border:1px solid #d0d5dd;border-radius:14px;padding:14px}.big{font-size:30px;font-weight:900}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border:1px solid #d0d5dd;padding:8px;font-size:12px;text-align:left}th{background:#eff8ff}@media print{button{display:none}}</style></head><body><button onclick="window.print()" style="padding:12px 18px;border:0;border-radius:10px;background:#155eef;color:white;font-weight:800">Download / Save as PDF</button><button onclick="window.close()" style="padding:12px 18px;border:1px solid #d0d5dd;border-radius:10px;background:white;color:#155eef;font-weight:800;margin-left:10px">Back to Dashboard</button><h1>Y-COUNT Enhancement Dashboard Report</h1><p>Generated by edurise • '+new Date().toLocaleString()+'</p><div class="grid"><div class="card"><b>Total Jobs</b><div class="big">128</div></div><div class="card"><b>Completed</b><div class="big">96</div></div><div class="card"><b>Discrepancy</b><div class="big">9</div></div><div class="card"><b>Blank Count</b><div class="big">3</div></div></div><h2>Realtime Inventory Accuracy Monitoring</h2><div class="grid"><div class="card"><b>Inventory Accuracy</b><div class="big">97.4%</div></div><div class="card"><b>Count Accuracy</b><div class="big">94.8%</div></div><div class="card"><b>Location Accuracy</b><div class="big">91.2%</div></div><div class="card"><b>Qty Accuracy</b><div class="big">98%</div></div></div><h2>Analysis Summary</h2><table><tr><th>SKU</th><th>Batch/Lot</th><th>System Qty</th><th>Physical Qty</th><th>Variance</th><th>Root Cause</th><th>Action</th></tr><tr><td>SKU-88120</td><td>BATCH-B240520</td><td>1,550 KG</td><td>1,520 KG</td><td>-30 KG</td><td>Outbound during active count</td><td>Recount + Verify OB</td></tr><tr><td>SKU-77120</td><td>LOT-2405-A</td><td>500 PCS</td><td>500 PCS</td><td>0</td><td>Location mismatch</td><td>Location correction</td></tr></table></body></html>';w.document.open();w.document.write(html);w.document.close();openModal('Generate Report','PDF report opened in a new tab. Click Download / Save as PDF.','📄')}
 document.addEventListener('click',function(e){var target=e.target.closest('.module,.status-row,.bar-line,.legend-row,.kpi,.card.click,.improve,.quick-item');if(!target||target.closest('.modal')||target.closest('.phone'))return;if(target.getAttribute('onclick'))return;var label=target.querySelector('h1,h2,h3,h4,b,small');openModal(label?label.innerText:'Y-Count Function','This function is active. It opens demo workflow, validation, report, audit trail and next action.','🔎')});
-document.addEventListener('DOMContentLoaded',function(){applyRoleAccess(); render('dashboard');document.getElementById('mobile').innerHTML=mobilePage();document.getElementById('team').innerHTML=teamPage();loadOrdersFromStorage();});
+document.addEventListener('DOMContentLoaded',function(){applyRoleAccess(); render('dashboard');document.getElementById('mobile').innerHTML=mobilePage();document.getElementById('team').innerHTML=teamPage();loadRequestsFromStorage();});
 </script>
 </body>
 </html>
